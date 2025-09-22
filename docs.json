@@ -57,12 +57,40 @@
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Upload file",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/endpoint/submit-document/submit"
+            ]
+          },
+          {
+            "group": "Notifications",
+            "pages": [
+              "api-reference/endpoint/notification/document_id"
+            ]
+          },
+          {
+            "group": "Extract all words",
+            "pages": [
+              "api-reference/endpoint/extract-all-words/extract_all_words"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "api-reference/endpoint/processed/processed_get",
+              "api-reference/endpoint/processed/processed_id_data_get"
+            ]
+          },
+          {
+            "group": "Export",
+            "pages": [
+              "api-reference/endpoint/export/export_get"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "api-reference/endpoint/documents/documents_id_get"
             ]
           }
         ]

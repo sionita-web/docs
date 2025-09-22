@@ -1,16 +1,13 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Public API",
+    "description": "OCR Gateway exposes a set of document analysis operations through the HTTP interface. Below are presented operations that can be used to interact with the OCR Gateway platform.\n# Authentication\n<SecurityDefinitions />"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://ocrf.ocrgateway.com/api",
+      "description": "Generated server url"
     }
   ],
   "security": [
@@ -18,55 +15,26 @@
       "bearerAuth": []
     }
   ],
+  "tags": [
+    {
+      "name": "Limitations and assumptions",
+      "description": "Our API puts some restrictions on the data submitted to the endpoints. Passing data that doesn't match these requirements will lead to undefined behaviour or sometimes to the HTTP <i>Bad Request</i> responses.<br><br><b>General payload limitations</b><br>&nbsp;&nbsp;&nbsp;&nbsp; The maximum allowed document size is <b>10 MiB.</b><br>&nbsp;&nbsp;&nbsp;&nbsp; Documents must not have any security restrictions such as password protection<br><br><b>Document limitations</b><br>Supported MIME types: <br>&nbsp;&nbsp;&nbsp;&nbsp;`application/pdf`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/jpeg`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/png`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/tiff`<br><br><br>We recommend the <b>640 x 480 pixels</b> resolution for documents and images to achieve the most accurate results.<br>"
+    }
+  ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/v1/submitDocument": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Upload file",
+        "description": "Upload a file for extraction. The file will be enqueued for processing. The processed document will be available after text extraction and completing all workflow steps.\n\nReturns processed document id",
+        "operationId": "uploadDocument",
         "requestBody": {
-          "description": "Plant to add to the store",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/DocumentExtractionPayloadBase64DataDto"
               }
             }
           },
@@ -74,21 +42,11 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "File processing started",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/DocumentId"
                 }
               }
             }
@@ -96,57 +54,381 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/v1/notification/document/{id}": {
+      "post": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Create notification",
+        "description": "This endpoint facilitates feedback submission on extracted document data, allowing for the identification of potential inaccuracies or the addition of relevant context.\n\nThe notification type determines how the system processes the feedback:\n\n- `ERROR`: Indicates that the extracted data might be inaccurate and requires verification.\n- `INFO`: Provides supplementary details to enhance document context.",
+        "operationId": "createNotification",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "Document id",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           }
         ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncorrectDataRequest"
+              }
+            }
           },
-          "400": {
-            "description": "unexpected error",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful"
+          },
+          "404": {
+            "description": "document with provided id not found"
+          }
+        }
+      }
+    },
+    "/v1/extract-all-words": {
+      "post": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Extract all words",
+        "description": "This endpoint extracts every recognizable word and provides it as an array of objects including additional metadata information. The response schema can be inspected below.",
+        "operationId": "extractAllWords",
+        "parameters": [
+          {
+            "name": "preProcess",
+            "in": "query",
+            "description": "If true the following pre-processing steps could be applied depending on document quality. <br><ul><li>`Deskew document:` Correct small image/page skewness (up to 10 degrees)</li><li>`Dewarp document:` Transform the image or page into a different perspective. e.g. scanned documents, photographed documents, etc.</li><li>`Fix layout:` Automatically correct the rotation of image/page layout if the rotation is wider than 10 degrees</li><li>`DPI optimization:` Reduce the size of big image documents by reducing their DPI</li></ul>",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Document to be uploaded. Supported document types: <br><ul><li>`pdf`</li><li>`jpeg`</li><li>`png`</li><li>`tiff`</li></ul>",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiRequest"
+              },
+              "encoding": {
+                "document": {}
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "$ref": "#/components/schemas/GAWDocumentDto"
                 }
               }
             }
           }
         }
       }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+    },
+    "/v1/processed": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Get documents",
+        "description": "Get page of documents (only full processed and rejected will be included).\n\n This method accepts the `q` parameter, which is a search query combining NAME or DATA search terms.",
+        "operationId": "getDocuments",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The maximum number of files to return per page. Partial or empty result pages are possible even before the end of the files list has been reached. Acceptable values are 1 to 100, inclusive",
+            "required": false,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "hubId",
+            "in": "query",
+            "description": "The hub id used for document processing",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Specifies the start date for filtering documents that have been transitioned to the Processed status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Specifies the end date for filtering documents that have been transitioned to the Processed status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Column by which documents will be filtered",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "updatedOn"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "description": "Sorting direction ('asc' or 'desc')",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc"
+            }
+          },
+          {
+            "name": "sourceType",
+            "in": "query",
+            "description": "The source from which the document was downloaded",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "API",
+                "EMAIL",
+                "UPLOAD",
+                "GDRIVE",
+                "MICROSOFT_ONEDRIVE",
+                "FAX",
+                "STUDIO_WORKFLOW",
+                "SITE_READER"
+              ]
+            }
+          },
+          {
+            "name": "searchBy",
+            "in": "query",
+            "description": "Field to sort by",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "NAME",
+              "enum": [
+                "NAME",
+                "DATA"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Document status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DONE",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "A query for filtering the results.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextExtractionRecordPage"
+                }
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/v1/processed/{id}/data": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Get document data by ID",
+        "description": "Gets a document's data by ID.\n\n Returns a list of field objects and Information about document.",
+        "operationId": "getProcessedDocumentDataById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Document id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessedDocumentDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "document with provided id not found"
+          },
+          "425": {
+            "description": "document is not ready"
+          }
+        }
+      }
+    },
+    "/v1/export": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Get text data as csv",
+        "description": "Gets a csv file with the text data by processed documents IDs.\n\n Returns a byte array of the csv document",
+        "operationId": "getExtractedTextAsCsv",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "description": "Array of processed document ids",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "byte"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "documents with provided ids not found"
+          },
+          "425": {
+            "description": "document is not ready"
+          }
+        }
+      }
+    },
+    "/v1/documents/{id}": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Download document file",
+        "description": "Download the document file in different qualities:\n\n- `ORIGINAL`: The original file\n- `LOW_QUALITY`: The compressed file. Used to reduce the file size\n- `PROCESSED`: The processed file. Currently are supported the following pre-processing steps: deskew, dewarp, fixlayout\n\nReturns a byte array of the file",
+        "operationId": "downloadDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Document id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "File type",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "PROCESSED",
+              "enum": [
+                "ORIGINAL",
+                "LOW_QUALITY",
+                "PROCESSED",
+                "ARTIFACT"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "byte"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "processed document with provided id not found"
           }
         }
       }
@@ -154,63 +436,689 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
+      "DocumentExtractionPayloadBase64DataDto": {
         "required": [
-          "name"
+          "data",
+          "filename",
+          "mimeType"
         ],
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "filename": {
+            "type": "string",
+            "description": "File name with extension",
+            "example": "new_file.pdf"
           },
-          "tag": {
-            "description": "Tag to specify the type",
+          "data": {
+            "type": "string",
+            "description": "Document bytes string encoded in Base64 format",
+            "format": "base64",
+            "example": "U3dhZ2dlciByb2Nrcw=="
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Document mime-type. Supported types: <br><ul><li>`application/pdf`</li><li>`image/jpeg`</li><li>`image/png`</li><li>`image/tiff`</li></ul>"
+          },
+          "metaAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
+            },
+            "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
+          }
+        }
+      },
+      "DocumentId": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           }
         }
       },
-      "NewPlant": {
+      "IncorrectDataRequest": {
+        "required": [
+          "message",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "maxLength": 1024,
+            "minLength": 0,
+            "type": "string",
+            "description": "A descriptive message explaining the reason for the notification.",
+            "example": "The extracted total amount is incorrect."
+          },
+          "type": {
+            "type": "string",
+            "description": "The types of notification:<li>`ERROR:` Indicates that the extracted data may be inaccurate and requires verification.<li>`INFO:` Provides supplementary details to enhance document context.",
+            "example": "INFO",
+            "enum": [
+              "ERROR",
+              "INFO"
+            ]
+          }
+        }
+      },
+      "MultiRequest": {
+        "type": "object",
+        "properties": {
+          "document": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
+      "DocumentWordDto": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "boundingBox": {
+            "$ref": "#/components/schemas/ProxyBoundingBoxDto"
+          },
+          "foundOnPage": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GAWDocumentDto": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/GAWDocumentHeaderDto"
+          },
+          "words": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentWordDto"
+            }
+          }
+        }
+      },
+      "GAWDocumentHeaderDto": {
+        "type": "object",
+        "properties": {
+          "wordCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "preprocess-steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ProxyBoundingBoxDto": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "y": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "APISourceInfo": {
+        "type": "object",
         "allOf": [
           {
-            "$ref": "#/components/schemas/Plant"
+            "$ref": "#/components/schemas/SourceInfo"
           },
           {
-            "required": [
-              "id"
-            ],
             "type": "object",
             "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
+              "userId": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "userName": {
+                "type": "string"
               }
             }
           }
         ]
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "EmailSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "FaxSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "fromNumber": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "GDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "OneDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "PageableObject": {
         "type": "object",
         "properties": {
-          "error": {
+          "pageNumber": {
             "type": "integer",
             "format": "int32"
           },
-          "message": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProcessedDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "extractedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expectedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "accuracyVerified": {
+            "type": "boolean"
+          },
+          "processedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "hubId": {
+            "type": "string"
+          },
+          "hubName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DONE",
+              "REJECTED"
+            ]
+          },
+          "sourceInfo": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/APISourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/EmailSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/FaxSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/GDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/OneDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/SiteReaderSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/StudioSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/UploadSourceInfo"
+              }
+            ]
+          },
+          "author": {
             "type": "string"
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+      },
+      "SiteReaderSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jobId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "nullHandling": {
+            "type": "string"
+          },
+          "ascending": {
+            "type": "boolean"
+          },
+          "property": {
+            "type": "string"
+          },
+          "ignoreCase": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SourceInfo": {
+        "type": "object",
+        "properties": {
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "API",
+              "EMAIL",
+              "UPLOAD",
+              "GDRIVE",
+              "MICROSOFT_ONEDRIVE",
+              "FAX",
+              "STUDIO_WORKFLOW",
+              "SITE_READER"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "sourceType"
+        }
+      },
+      "StudioSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowId": {
+                "type": "string"
+              },
+              "workflowName": {
+                "type": "string"
+              },
+              "runId": {
+                "type": "string"
+              },
+              "runStepId": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "TextExtractionRecordPage": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessedDocument"
+            }
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UploadSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "userName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "CustomOrderProperty": {
+        "type": "object",
+        "properties": {
+          "parentIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fieldIndex": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Field": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "field id",
+            "example": "605c644cbf48241234f62121"
+          },
+          "name": {
+            "type": "string",
+            "description": "field name",
+            "example": "Field Name"
+          },
+          "type": {
+            "type": "string",
+            "description": "field type",
+            "example": "TEXT"
+          },
+          "value": {
+            "type": "object",
+            "description": "field value"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PublicApiMatchedFieldMetadataDto"
+          }
+        }
+      },
+      "MatchedFieldMetadataPlacementDto": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "y": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProcessedDocumentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "extractedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expectedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "accuracyVerified": {
+            "type": "boolean"
+          },
+          "processedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "hubId": {
+            "type": "string"
+          },
+          "hubName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DONE",
+              "REJECTED"
+            ]
+          },
+          "sourceInfo": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/APISourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/EmailSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/FaxSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/GDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/OneDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/SiteReaderSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/StudioSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/UploadSourceInfo"
+              }
+            ]
+          },
+          "author": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Field"
+            }
+          },
+          "metaAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PublicApiMatchedFieldMetadataDto": {
+        "type": "object",
+        "properties": {
+          "extracted": {
+            "type": "boolean"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "placement": {
+            "$ref": "#/components/schemas/MatchedFieldMetadataPlacementDto"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customOrderProperty": {
+            "$ref": "#/components/schemas/CustomOrderProperty"
+          }
+        }
       }
     }
   }
