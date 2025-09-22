@@ -12,7 +12,7 @@
   ],
   "security": [
     {
-      "bearerAuth": []
+      "Authentication": []
     }
   ],
   "tags": [
@@ -1119,6 +1119,20 @@
             "$ref": "#/components/schemas/CustomOrderProperty"
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "Authentication": {
+        "type": "apiKey",
+        "description": "All API requests should contain information about your identity. This information should be provided in the form of an API key.\nThe key can be found in the API section of our application. The API key should be passed inside the Authorization HTTP header and its value should be prepended by the **api-key** prefix.",
+        "name": "Authorization",
+        "in": "header"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "description": "JWT auth description",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
