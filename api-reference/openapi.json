@@ -4,6 +4,11 @@
     "title": "Public API",
     "description": "OCR Gateway exposes a set of document analysis operations through the HTTP interface. Below are presented operations that can be used to interact with the OCR Gateway platform.\n# Authentication\n<SecurityDefinitions />"
   },
+  "x-mint": {
+    "mcp": {
+      "enabled": true
+    }
+  },
   "servers": [
     {
       "url": "https://ocrf.ocrgateway.com/api",
