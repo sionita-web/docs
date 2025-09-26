@@ -48,7 +48,7 @@
             ]
           },
           {
-            "group": "Datastore Configuration",
+            "group": "Data Store Schema",
             "pages": [
               "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_all",
               "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_id",
@@ -58,7 +58,7 @@
             ]
           },
           {
-            "group": "Datastore",
+            "group": "Data Store Record",
             "pages": [
               "api-reference/endpoint/studio/datastore/datasource_by_name",
               "api-reference/endpoint/studio/datastore/datasource_insert",

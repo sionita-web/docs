@@ -27,114 +27,10 @@
     }
   ],
   "paths": {
-    "/v1/datastore/{dataSourceName}/{documentDataId}": {
-      "put": {
-        "tags": [
-          "Datastore"
-        ],
-        "summary": "Update data",
-        "operationId": "update",
-        "parameters": [
-          {
-            "name": "dataSourceName",
-            "in": "path",
-            "description": "Datastore name",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "users"
-          },
-          {
-            "name": "documentDataId",
-            "in": "path",
-            "description": "Document data id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "6718dd8030bb79580bcdf8af"
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "string",
-                "description": "Fields to update"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully updated data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Data source not found",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/datasource/configuration/{id}": {
+    "/v1/datastore/schemas/{id}": {
       "get": {
         "tags": [
-          "Data Store Configuration"
+          "Data Store Schemas"
         ],
         "summary": "Get data source by ID",
         "operationId": "findById",
@@ -151,12 +47,12 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "200": {
+            "description": "Successfully retrieved data source",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
                 }
               }
             }
@@ -173,6 +69,16 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -200,25 +106,15 @@
                 }
               }
             }
-          },
-          "200": {
-            "description": "Successfully retrieved data source",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
-                }
-              }
-            }
           }
         }
       },
       "put": {
         "tags": [
-          "Data Store Configuration"
+          "Data Store Schemas"
         ],
         "summary": "Update an existing data source",
-        "operationId": "update_1",
+        "operationId": "update",
         "parameters": [
           {
             "name": "id",
@@ -242,6 +138,26 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "403": {
             "description": "Forbidden",
             "content": {
@@ -252,8 +168,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request",
+          "404": {
+            "description": "Data source not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -272,8 +188,59 @@
               }
             }
           },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Data Store Schemas"
+        ],
+        "summary": "Delete data source",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Datastore ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -292,6 +259,16 @@
               }
             }
           },
+          "200": {
+            "description": "Successfully delete data source",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -303,18 +280,30 @@
             }
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/v1/datastore/records/{dataStoreName}/{documentDataId}": {
+      "put": {
         "tags": [
-          "Data Store Configuration"
+          "Data Store Records"
         ],
-        "summary": "Delete data source",
-        "operationId": "delete_1",
+        "summary": "Update record",
+        "operationId": "update_1",
         "parameters": [
           {
-            "name": "id",
+            "name": "dataStoreName",
             "in": "path",
-            "description": "Datastore ID",
+            "description": "Data store schema name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          },
+          {
+            "name": "documentDataId",
+            "in": "path",
+            "description": "Document data id",
             "required": true,
             "schema": {
               "type": "string"
@@ -322,9 +311,34 @@
             "example": "6718dd8030bb79580bcdf8af"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "description": "Fields to update",
+                "example": {
+                  "firsName": "Eric",
+                  "lastName": "Barr"
+                }
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "200": {
+            "description": "Successfully updated record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data store schema not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -353,8 +367,8 @@
               }
             }
           },
-          "404": {
-            "description": "Data source not found",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -369,16 +383,6 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Successfully delete data source",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
                 }
               }
             }
@@ -417,16 +421,6 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Workflow not found",
             "content": {
@@ -457,6 +451,16 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -470,18 +474,190 @@
         }
       }
     },
-    "/v1/datastore/{dataSourceName}": {
+    "/v1/datastore/schemas": {
       "get": {
         "tags": [
-          "Datastore"
+          "Data Store Schemas"
         ],
-        "summary": "Get all data",
+        "summary": "Get all data store",
+        "operationId": "findALl",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully retrieved list of data store",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Data Store Schemas"
+        ],
+        "summary": "Create a new data source",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataSourceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully created data source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/datastore/records/{dataStoreName}": {
+      "get": {
+        "tags": [
+          "Data Store Records"
+        ],
+        "summary": "Get all records",
         "operationId": "findAll",
         "parameters": [
           {
-            "name": "dataSourceName",
+            "name": "dataStoreName",
             "in": "path",
-            "description": "Datastore name",
+            "description": "Data store schema name",
             "required": true,
             "schema": {
               "type": "string"
@@ -541,8 +717,8 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "404": {
+            "description": "Data store schema not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -552,7 +728,7 @@
             }
           },
           "200": {
-            "description": "Successfully retrieved list of data",
+            "description": "Successfully retrieved list of records",
             "content": {
               "application/json": {
                 "schema": {
@@ -581,8 +757,8 @@
               }
             }
           },
-          "404": {
-            "description": "Data source not found",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -605,15 +781,15 @@
       },
       "post": {
         "tags": [
-          "Datastore"
+          "Data Store Records"
         ],
-        "summary": "Save data",
+        "summary": "Save record",
         "operationId": "save",
         "parameters": [
           {
-            "name": "dataSourceName",
+            "name": "dataStoreName",
             "in": "path",
-            "description": "Datastore name",
+            "description": "Data store schema name",
             "required": true,
             "schema": {
               "type": "string"
@@ -626,19 +802,33 @@
             "application/json": {
               "schema": {
                 "type": "string",
-                "description": "Fields to save"
+                "description": "Fields to save",
+                "example": {
+                  "firsName": "Rick",
+                  "lastName": "Barr"
+                }
               }
             }
           },
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "404": {
+            "description": "Data store schema not found",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully saved record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -663,22 +853,12 @@
               }
             }
           },
-          "404": {
-            "description": "Data source not found",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Successfully saved data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -697,15 +877,15 @@
       },
       "delete": {
         "tags": [
-          "Datastore"
+          "Data Store Records"
         ],
-        "summary": "Delete data by document data id",
-        "operationId": "delete",
+        "summary": "Delete record id",
+        "operationId": "delete_1",
         "parameters": [
           {
-            "name": "dataSourceName",
+            "name": "dataStoreName",
             "in": "path",
-            "description": "Datastore name",
+            "description": "Data store schema name",
             "required": true,
             "schema": {
               "type": "string"
@@ -718,7 +898,7 @@
             "application/json": {
               "schema": {
                 "type": "array",
-                "description": "List of document data IDs to delete",
+                "description": "List of document record IDs to delete",
                 "items": {
                   "type": "string"
                 }
@@ -728,48 +908,8 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "404": {
-            "description": "Data source not found",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
+            "description": "Data store schema not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -780,148 +920,6 @@
           },
           "200": {
             "description": "Successfully deleted data"
-          }
-        }
-      }
-    },
-    "/v1/datasource/configuration": {
-      "get": {
-        "tags": [
-          "Data Store Configuration"
-        ],
-        "summary": "Get all data sources",
-        "operationId": "findALl",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "minimum": 0,
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "sortDirection",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Successfully retrieved list of data sources",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Page"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Data Store Configuration"
-        ],
-        "summary": "Create a new data source",
-        "operationId": "create",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DataSourceDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Successfully created data source",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
-                }
-              }
-            }
           },
           "400": {
             "description": "Invalid request",
@@ -935,6 +933,16 @@
           },
           "401": {
             "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -965,12 +973,15 @@
         "description": "Returns a list of workflows",
         "operationId": "getWorkflows",
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "200": {
+            "description": "Found workflows",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowPageDto"
+                  }
                 }
               }
             }
@@ -995,8 +1006,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -1005,15 +1016,12 @@
               }
             }
           },
-          "200": {
-            "description": "Found workflows",
+          "500": {
+            "description": "Internal server error",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WorkflowPageDto"
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1042,12 +1050,12 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "200": {
+            "description": "Workflow found",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/WorkflowDto"
                 }
               }
             }
@@ -1082,12 +1090,12 @@
               }
             }
           },
-          "200": {
-            "description": "Workflow found",
+          "403": {
+            "description": "Forbidden",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/WorkflowDto"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1124,16 +1132,6 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Workflow not found",
             "content": {
@@ -1164,8 +1162,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -1176,6 +1174,16 @@
           },
           "200": {
             "description": "Workflow deleted"
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1288,12 +1296,12 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "200": {
+            "description": "Found runs",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/PageImpl"
                 }
               }
             }
@@ -1318,8 +1326,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -1328,12 +1336,12 @@
               }
             }
           },
-          "200": {
-            "description": "Found runs",
+          "500": {
+            "description": "Internal server error",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/PageImpl"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1372,25 +1380,12 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "404": {
+            "description": "Run step not found",
             "content": {
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Found run step execution history",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RunStepExecutionInfoDto"
-                  }
                 }
               }
             }
@@ -1415,8 +1410,21 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "200": {
+            "description": "Found run step execution history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunStepExecutionInfoDto"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -1425,8 +1433,8 @@
               }
             }
           },
-          "404": {
-            "description": "Run step not found",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -1459,26 +1467,6 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Run not found",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid request",
             "content": {
@@ -1499,8 +1487,18 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -1515,6 +1513,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RunDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1543,22 +1551,12 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Run not found",
+          "200": {
+            "description": "Found run",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/RunExecutionInformationDto"
                 }
               }
             }
@@ -1583,12 +1581,22 @@
               }
             }
           },
-          "200": {
-            "description": "Found run",
+          "403": {
+            "description": "Forbidden",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/RunExecutionInformationDto"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1606,18 +1614,18 @@
         }
       }
     },
-    "/v1/datastore/{dataSourceName}/truncate": {
+    "/v1/datastore/records/{dataStoreName}/truncate": {
       "delete": {
         "tags": [
-          "Datastore"
+          "Data Store Records"
         ],
-        "summary": "Truncate data by datastore name",
+        "summary": "Truncate record by data store schema name",
         "operationId": "truncate",
         "parameters": [
           {
-            "name": "dataSourceName",
+            "name": "dataStoreName",
             "in": "path",
-            "description": "Datastore name",
+            "description": "Data store schema name",
             "required": true,
             "schema": {
               "type": "string"
@@ -1626,8 +1634,8 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden",
+          "404": {
+            "description": "Data store schema not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -1635,6 +1643,9 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Successfully truncate data"
           },
           "400": {
             "description": "Invalid request",
@@ -1656,8 +1667,8 @@
               }
             }
           },
-          "404": {
-            "description": "Data source not found",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -1675,9 +1686,6 @@
                 }
               }
             }
-          },
-          "200": {
-            "description": "Successfully truncate data"
           }
         }
       }
@@ -1685,6 +1693,126 @@
   },
   "components": {
     "schemas": {
+      "DataSourceDto": {
+        "required": [
+          "viewName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "viewName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "dependencies": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Dependency"
+            }
+          },
+          "schemaConfiguration": {
+            "$ref": "#/components/schemas/SchemaConfiguration"
+          }
+        }
+      },
+      "Dependency": {
+        "required": [
+          "id",
+          "name",
+          "references"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "references": {
+            "type": "string",
+            "enum": [
+              "WORKFLOW",
+              "FORM"
+            ]
+          }
+        }
+      },
+      "FieldConfiguration": {
+        "required": [
+          "type",
+          "viewName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "viewName": {
+            "type": "string"
+          },
+          "notNull": {
+            "type": "boolean"
+          },
+          "unique": {
+            "type": "boolean"
+          },
+          "sort": {
+            "type": "boolean"
+          },
+          "filter": {
+            "type": "boolean"
+          },
+          "hide": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOOLEAN",
+              "NUMBER",
+              "DATE",
+              "STRING"
+            ]
+          },
+          "allowToChangeTheType": {
+            "type": "boolean"
+          }
+        },
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "SchemaConfiguration": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldConfiguration"
+            }
+          },
+          "overrides": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "composites": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "ContentDisposition": {
         "type": "object",
         "properties": {
@@ -1720,10 +1848,10 @@
             "format": "date-time",
             "deprecated": true
           },
-          "attachment": {
+          "formData": {
             "type": "boolean"
           },
-          "formData": {
+          "attachment": {
             "type": "boolean"
           },
           "inline": {
@@ -1961,6 +2089,10 @@
                   "$ref": "#/components/schemas/MediaType"
                 }
               },
+              "basicAuth": {
+                "type": "string",
+                "writeOnly": true
+              },
               "acceptLanguage": {
                 "type": "array",
                 "items": {
@@ -1975,10 +2107,6 @@
                     }
                   }
                 }
-              },
-              "basicAuth": {
-                "type": "string",
-                "writeOnly": true
               },
               "acceptLanguageAsLocales": {
                 "type": "array",
@@ -2222,126 +2350,6 @@
             "type": "object",
             "additionalProperties": {
               "type": "object"
-            }
-          }
-        }
-      },
-      "DataSourceDto": {
-        "required": [
-          "viewName"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "viewName": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "dependencies": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Dependency"
-            }
-          },
-          "schemaConfiguration": {
-            "$ref": "#/components/schemas/SchemaConfiguration"
-          }
-        }
-      },
-      "Dependency": {
-        "required": [
-          "id",
-          "name",
-          "references"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "references": {
-            "type": "string",
-            "enum": [
-              "WORKFLOW",
-              "FORM"
-            ]
-          }
-        }
-      },
-      "FieldConfiguration": {
-        "required": [
-          "type",
-          "viewName"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "viewName": {
-            "type": "string"
-          },
-          "notNull": {
-            "type": "boolean"
-          },
-          "unique": {
-            "type": "boolean"
-          },
-          "sort": {
-            "type": "boolean"
-          },
-          "filter": {
-            "type": "boolean"
-          },
-          "hide": {
-            "type": "boolean"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "BOOLEAN",
-              "NUMBER",
-              "DATE",
-              "STRING"
-            ]
-          },
-          "allowToChangeTheType": {
-            "type": "boolean"
-          }
-        },
-        "discriminator": {
-          "propertyName": "type"
-        }
-      },
-      "SchemaConfiguration": {
-        "type": "object",
-        "properties": {
-          "fields": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FieldConfiguration"
-            }
-          },
-          "overrides": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "composites": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string"
             }
           }
         }
@@ -2773,9 +2781,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -2786,6 +2791,9 @@
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
+          },
+          "first": {
+            "type": "boolean"
           },
           "numberOfElements": {
             "type": "integer",
@@ -2814,10 +2822,10 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           }
         }
@@ -3163,6 +3171,52 @@
           }
         }
       },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
       "PageImplDecorator": {
         "type": "object",
         "properties": {
@@ -3192,9 +3246,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "first": {
-            "type": "boolean"
-          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -3206,51 +3257,8 @@
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Page": {
-        "type": "object",
-        "properties": {
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
           "first": {
             "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
