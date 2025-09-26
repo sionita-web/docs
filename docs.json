@@ -24,11 +24,8 @@
             "group": "Document Insides",
             "pages": [
               "api-reference/endpoint/di/submit-document/submit",
-              "api-reference/endpoint/di/notification/document_id",
-              "api-reference/endpoint/di/extract-all-words/extract_all_words",
               "api-reference/endpoint/di/processed/processed_get",
               "api-reference/endpoint/di/processed/processed_id_data_get",
-              "api-reference/endpoint/di/export/export_get",
               "api-reference/endpoint/di/documents/documents_id_get"
             ]
           },
