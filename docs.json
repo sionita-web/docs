@@ -12,9 +12,65 @@
     "tabs": [
       {
         "tab": "API reference",
-        "openapi": {
-          "source": "api-reference/openapi.json"
-        }
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Document Insides",
+            "pages": [
+              "api-reference/endpoint/di/submit-document/submit",
+              "api-reference/endpoint/di/notification/document_id",
+              "api-reference/endpoint/di/extract-all-words/extract_all_words",
+              "api-reference/endpoint/di/processed/processed_get",
+              "api-reference/endpoint/di/processed/processed_id_data_get",
+              "api-reference/endpoint/di/export/export_get",
+              "api-reference/endpoint/di/documents/documents_id_get"
+            ]
+          },
+          {
+            "group": "Workflow",
+            "pages": [
+              "api-reference/endpoint/studio/workflow/workflow_get_all",
+              "api-reference/endpoint/studio/workflow/workflow_get_id",
+              "api-reference/endpoint/studio/workflow/workflow_toggle",
+              "api-reference/endpoint/studio/workflow/workflow_delete_id"
+            ]
+          },
+          {
+            "group": "Run",
+            "pages": [
+              "api-reference/endpoint/studio/run/run_all",
+              "api-reference/endpoint/studio/run/run_id",
+              "api-reference/endpoint/studio/run/run_id_information",
+              "api-reference/endpoint/studio/run/run_step_history"
+            ]
+          },
+          {
+            "group": "Datastore Configuration",
+            "pages": [
+              "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_all",
+              "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_id",
+              "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_create",
+              "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_update",
+              "api-reference/endpoint/studio/datastore/configuration/datasource_configuration_delete"
+            ]
+          },
+          {
+            "group": "Datastore",
+            "pages": [
+              "api-reference/endpoint/studio/datastore/datasource_by_name",
+              "api-reference/endpoint/studio/datastore/datasource_insert",
+              "api-reference/endpoint/studio/datastore/datasource_put",
+              "api-reference/endpoint/studio/datastore/datasource_delete",
+              "api-reference/endpoint/studio/datastore/datasource_truncate"
+            ]
+          }
+        ]
       }
     ],
     "global": {

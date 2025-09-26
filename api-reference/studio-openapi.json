@@ -1,0 +1,3274 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Studio Public API",
+    "description": "This API exposes document analysis operations through HTTP.\nOnly public endpoints are exposed under /v1.\n\n## Authentication\nAll endpoints require a Bearer token in the Authorization header.\n",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://172.17.0.1:8033/api/studio",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Workflows",
+      "description": "Public API for managing workflows"
+    },
+    {
+      "name": "Runs",
+      "description": "Public API for managing runs"
+    }
+  ],
+  "paths": {
+    "/v1/datastore/{dataSourceName}/{documentDataId}": {
+      "put": {
+        "tags": [
+          "Datastore"
+        ],
+        "summary": "Update data",
+        "operationId": "update",
+        "parameters": [
+          {
+            "name": "dataSourceName",
+            "in": "path",
+            "description": "Datastore name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          },
+          {
+            "name": "documentDataId",
+            "in": "path",
+            "description": "Document data id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "description": "Fields to update"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/datasource/configuration/{id}": {
+      "get": {
+        "tags": [
+          "Data Store Configuration"
+        ],
+        "summary": "Get data source by ID",
+        "operationId": "findById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Datastore ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully retrieved data source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Data Store Configuration"
+        ],
+        "summary": "Update an existing data source",
+        "operationId": "update_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Datastore ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataSourceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully updated data source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Data Store Configuration"
+        ],
+        "summary": "Delete data source",
+        "operationId": "delete_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Datastore ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully delete data source",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{id}/toggle": {
+      "post": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Trigger workflow by id",
+        "description": "Switches the workflow state (enabled/disabled) by its unique identifier",
+        "operationId": "workflowToggle",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Workflow ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workflow state toggled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workflow not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/datastore/{dataSourceName}": {
+      "get": {
+        "tags": [
+          "Datastore"
+        ],
+        "summary": "Get all data",
+        "operationId": "findAll",
+        "parameters": [
+          {
+            "name": "dataSourceName",
+            "in": "path",
+            "description": "Datastore name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully retrieved list of data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageImplDecorator"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Datastore"
+        ],
+        "summary": "Save data",
+        "operationId": "save",
+        "parameters": [
+          {
+            "name": "dataSourceName",
+            "in": "path",
+            "description": "Datastore name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "description": "Fields to save"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully saved data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Datastore"
+        ],
+        "summary": "Delete data by document data id",
+        "operationId": "delete",
+        "parameters": [
+          {
+            "name": "dataSourceName",
+            "in": "path",
+            "description": "Datastore name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "description": "List of document data IDs to delete",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully deleted data"
+          }
+        }
+      }
+    },
+    "/v1/datasource/configuration": {
+      "get": {
+        "tags": [
+          "Data Store Configuration"
+        ],
+        "summary": "Get all data sources",
+        "operationId": "findALl",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully retrieved list of data sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Data Store Configuration"
+        ],
+        "summary": "Create a new data source",
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataSourceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully created data source",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceReadWriteDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows": {
+      "get": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Find workflows",
+        "description": "Returns a list of workflows",
+        "operationId": "getWorkflows",
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found workflows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowPageDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workflows/{id}": {
+      "get": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Get workflow by id",
+        "description": "Returns a workflow configuration by its unique identifier",
+        "operationId": "getWorkflowById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Workflow ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workflow not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Workflow found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Workflows"
+        ],
+        "summary": "Delete workflow by id",
+        "description": "Deletes a workflow by its unique identifier",
+        "operationId": "deleteWorkflow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Workflow ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workflow not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Workflow deleted"
+          }
+        }
+      }
+    },
+    "/v1/runs": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "summary": "Find runs",
+        "description": "Returns a list of runs",
+        "operationId": "getRuns",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "query",
+            "description": "Filter runs by run ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          },
+          {
+            "name": "workflowId",
+            "in": "query",
+            "description": "Filter runs by workflow ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Start of creation date-time range (inclusive)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2025-07-07"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "End of creation date-time range (inclusive)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2025-07-07"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter runs by status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "IN_PROGRESS",
+                "FAILED",
+                "DONE"
+              ]
+            },
+            "example": "IN_PROGRESS"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found runs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageImpl"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runs/{runId}/steps/{stepId}/history": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "summary": "Get run step execution history",
+        "description": "Returns the execution history of a specific run step identified by runId and stepId",
+        "operationId": "getStepInformationById",
+        "parameters": [
+          {
+            "name": "runId",
+            "in": "path",
+            "description": "Run ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          },
+          {
+            "name": "stepId",
+            "in": "path",
+            "description": "Step ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found run step execution history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunStepExecutionInfoDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run step not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runs/{id}": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "summary": "Get run by id",
+        "description": "Returns steps progress for a run by its unique identifier",
+        "operationId": "getById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Run ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Run not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/runs/{id}/information": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "summary": "Get run information by id",
+        "description": "Returns information about a run by its unique identifier",
+        "operationId": "getInformationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Run ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "6718dd8030bb79580bcdf8af"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Run not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found run",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunExecutionInformationDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/datastore/{dataSourceName}/truncate": {
+      "delete": {
+        "tags": [
+          "Datastore"
+        ],
+        "summary": "Truncate data by datastore name",
+        "operationId": "truncate",
+        "parameters": [
+          {
+            "name": "dataSourceName",
+            "in": "path",
+            "description": "Datastore name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "users"
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data source not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully truncate data"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ContentDisposition": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "charset": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "deprecated": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "modificationDate": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "readDate": {
+            "type": "string",
+            "format": "date-time",
+            "deprecated": true
+          },
+          "attachment": {
+            "type": "boolean"
+          },
+          "formData": {
+            "type": "boolean"
+          },
+          "inline": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "#/components/schemas/ProblemDetail"
+          },
+          "statusCode": {
+            "$ref": "#/components/schemas/HttpStatusCode"
+          },
+          "detailMessageArguments": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "typeMessageCode": {
+            "type": "string"
+          },
+          "detailMessageCode": {
+            "type": "string"
+          },
+          "titleMessageCode": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "properties": {
+              "contentDisposition": {
+                "$ref": "#/components/schemas/ContentDisposition"
+              },
+              "acceptCharset": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "empty": {
+                "type": "boolean"
+              },
+              "location": {
+                "type": "string",
+                "format": "uri"
+              },
+              "host": {
+                "type": "object",
+                "properties": {
+                  "hostString": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "object",
+                    "properties": {
+                      "hostAddress": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "byte"
+                        }
+                      },
+                      "hostName": {
+                        "type": "string"
+                      },
+                      "linkLocalAddress": {
+                        "type": "boolean"
+                      },
+                      "multicastAddress": {
+                        "type": "boolean"
+                      },
+                      "anyLocalAddress": {
+                        "type": "boolean"
+                      },
+                      "loopbackAddress": {
+                        "type": "boolean"
+                      },
+                      "siteLocalAddress": {
+                        "type": "boolean"
+                      },
+                      "mcglobal": {
+                        "type": "boolean"
+                      },
+                      "mcnodeLocal": {
+                        "type": "boolean"
+                      },
+                      "mclinkLocal": {
+                        "type": "boolean"
+                      },
+                      "mcsiteLocal": {
+                        "type": "boolean"
+                      },
+                      "mcorgLocal": {
+                        "type": "boolean"
+                      },
+                      "canonicalHostName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "port": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "unresolved": {
+                    "type": "boolean"
+                  },
+                  "hostName": {
+                    "type": "string"
+                  }
+                }
+              },
+              "all": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "writeOnly": true
+              },
+              "lastModified": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "date": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "contentLength": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "origin": {
+                "type": "string"
+              },
+              "range": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HttpRange"
+                }
+              },
+              "allow": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HttpMethod"
+                }
+              },
+              "cacheControl": {
+                "type": "string"
+              },
+              "contentLanguage": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "variant": {
+                    "type": "string"
+                  },
+                  "script": {
+                    "type": "string"
+                  },
+                  "unicodeLocaleAttributes": {
+                    "uniqueItems": true,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "unicodeLocaleKeys": {
+                    "uniqueItems": true,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "displayLanguage": {
+                    "type": "string"
+                  },
+                  "displayScript": {
+                    "type": "string"
+                  },
+                  "displayCountry": {
+                    "type": "string"
+                  },
+                  "displayVariant": {
+                    "type": "string"
+                  },
+                  "extensionKeys": {
+                    "uniqueItems": true,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "iso3Language": {
+                    "type": "string"
+                  },
+                  "iso3Country": {
+                    "type": "string"
+                  }
+                }
+              },
+              "etag": {
+                "type": "string"
+              },
+              "vary": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "accept": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MediaType"
+                }
+              },
+              "acceptPatch": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MediaType"
+                }
+              },
+              "acceptLanguage": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "range": {
+                      "type": "string"
+                    },
+                    "weight": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                }
+              },
+              "basicAuth": {
+                "type": "string",
+                "writeOnly": true
+              },
+              "acceptLanguageAsLocales": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "language": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "variant": {
+                      "type": "string"
+                    },
+                    "script": {
+                      "type": "string"
+                    },
+                    "unicodeLocaleAttributes": {
+                      "uniqueItems": true,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "unicodeLocaleKeys": {
+                      "uniqueItems": true,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "displayLanguage": {
+                      "type": "string"
+                    },
+                    "displayScript": {
+                      "type": "string"
+                    },
+                    "displayCountry": {
+                      "type": "string"
+                    },
+                    "displayVariant": {
+                      "type": "string"
+                    },
+                    "extensionKeys": {
+                      "uniqueItems": true,
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "iso3Language": {
+                      "type": "string"
+                    },
+                    "iso3Country": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "accessControlAllowCredentials": {
+                "type": "boolean"
+              },
+              "accessControlAllowHeaders": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "accessControlAllowMethods": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HttpMethod"
+                }
+              },
+              "accessControlAllowOrigin": {
+                "type": "string"
+              },
+              "accessControlExposeHeaders": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "accessControlMaxAge": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "accessControlRequestHeaders": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "accessControlRequestMethod": {
+                "$ref": "#/components/schemas/HttpMethod"
+              },
+              "bearerAuth": {
+                "type": "string",
+                "writeOnly": true
+              },
+              "connection": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "expires": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "ifMatch": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ifNoneMatch": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ifUnmodifiedSince": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "pragma": {
+                "type": "string"
+              },
+              "upgrade": {
+                "type": "string"
+              },
+              "ifModifiedSince": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "contentType": {
+                "$ref": "#/components/schemas/MediaType"
+              }
+            },
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "HttpMethod": {
+        "type": "object"
+      },
+      "HttpRange": {
+        "type": "object"
+      },
+      "HttpStatusCode": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "boolean"
+          },
+          "is2xxSuccessful": {
+            "type": "boolean"
+          },
+          "is4xxClientError": {
+            "type": "boolean"
+          },
+          "is5xxServerError": {
+            "type": "boolean"
+          },
+          "is1xxInformational": {
+            "type": "boolean"
+          },
+          "is3xxRedirection": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MediaType": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "subtype": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "qualityValue": {
+            "type": "number",
+            "format": "double"
+          },
+          "wildcardType": {
+            "type": "boolean"
+          },
+          "wildcardSubtype": {
+            "type": "boolean"
+          },
+          "subtypeSuffix": {
+            "type": "string"
+          },
+          "charset": {
+            "type": "string"
+          },
+          "concrete": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string",
+            "format": "uri"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "DataSourceDto": {
+        "required": [
+          "viewName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "viewName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "dependencies": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Dependency"
+            }
+          },
+          "schemaConfiguration": {
+            "$ref": "#/components/schemas/SchemaConfiguration"
+          }
+        }
+      },
+      "Dependency": {
+        "required": [
+          "id",
+          "name",
+          "references"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "references": {
+            "type": "string",
+            "enum": [
+              "WORKFLOW",
+              "FORM"
+            ]
+          }
+        }
+      },
+      "FieldConfiguration": {
+        "required": [
+          "type",
+          "viewName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "viewName": {
+            "type": "string"
+          },
+          "notNull": {
+            "type": "boolean"
+          },
+          "unique": {
+            "type": "boolean"
+          },
+          "sort": {
+            "type": "boolean"
+          },
+          "filter": {
+            "type": "boolean"
+          },
+          "hide": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOOLEAN",
+              "NUMBER",
+              "DATE",
+              "STRING"
+            ]
+          },
+          "allowToChangeTheType": {
+            "type": "boolean"
+          }
+        },
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "SchemaConfiguration": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldConfiguration"
+            }
+          },
+          "overrides": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "composites": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "DataSourceReadWriteDto": {
+        "required": [
+          "viewName"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "viewName": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "dependencies": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Dependency"
+            }
+          },
+          "schemaConfiguration": {
+            "$ref": "#/components/schemas/SchemaConfiguration"
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DeployedInstance": {
+        "required": [
+          "deployedAt",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/WfTrigger"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WfStep"
+            }
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "deployedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "DraftInstance": {
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/WfTrigger"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WfStep"
+            }
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "hasChanges": {
+            "type": "boolean"
+          }
+        }
+      },
+      "JsonNode": {
+        "type": "object"
+      },
+      "NodeContext": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "NodeType.MANUAL_TRIGGER",
+              "NodeType.WEBHOOK_TRIGGER",
+              "NodeType.SIDES_PULL_TRIGGER",
+              "NodeType.SIDES_POST",
+              "NodeType.WEBHOOK",
+              "NodeType.OCRG",
+              "NodeType.WEB_AUTOMATION",
+              "NodeType.GDRIVE",
+              "NodeType.ONEDRIVE",
+              "NodeType.SCHEDULER",
+              "NodeType.LOOP",
+              "NodeType.GOOGLE_SHEETS",
+              "NodeType.WEB_FUNCTION",
+              "NodeType.DATA_SOURCE",
+              "NodeType.EMAIL",
+              "NodeType.EMAIL_TRIGGER",
+              "NodeType.TMP",
+              "NodeType.FAXER",
+              "NodeType.PYTHON"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "NodeExecutionErrorInfo": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "body": {
+            "$ref": "#/components/schemas/JsonNode"
+          }
+        }
+      },
+      "WfStep": {
+        "required": [
+          "id",
+          "name",
+          "order",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[^./]*$",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "ctx": {
+            "$ref": "#/components/schemas/NodeContext"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "NOT_CONFIGURED",
+              "NOT_TESTED",
+              "STALE",
+              "ERROR",
+              "READY",
+              "TEST_IN_PROGRESS"
+            ]
+          },
+          "errorInfo": {
+            "$ref": "#/components/schemas/NodeExecutionErrorInfo"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NodeType.MANUAL_TRIGGER",
+              "NodeType.WEBHOOK_TRIGGER",
+              "NodeType.SIDES_PULL_TRIGGER",
+              "NodeType.SIDES_POST",
+              "NodeType.WEBHOOK",
+              "NodeType.OCRG",
+              "NodeType.WEB_AUTOMATION",
+              "NodeType.GDRIVE",
+              "NodeType.ONEDRIVE",
+              "NodeType.SCHEDULER",
+              "NodeType.LOOP",
+              "NodeType.GOOGLE_SHEETS",
+              "NodeType.WEB_FUNCTION",
+              "NodeType.DATA_SOURCE",
+              "NodeType.EMAIL",
+              "NodeType.EMAIL_TRIGGER",
+              "NodeType.TMP",
+              "NodeType.FAXER",
+              "NodeType.PYTHON"
+            ]
+          }
+        }
+      },
+      "WfTrigger": {
+        "required": [
+          "id",
+          "name",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[^./]*$",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "ctx": {
+            "$ref": "#/components/schemas/NodeContext"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "NOT_CONFIGURED",
+              "NOT_TESTED",
+              "STALE",
+              "ERROR",
+              "READY",
+              "TEST_IN_PROGRESS"
+            ]
+          },
+          "errorInfo": {
+            "$ref": "#/components/schemas/NodeExecutionErrorInfo"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NodeType.MANUAL_TRIGGER",
+              "NodeType.WEBHOOK_TRIGGER",
+              "NodeType.SIDES_PULL_TRIGGER",
+              "NodeType.SIDES_POST",
+              "NodeType.WEBHOOK",
+              "NodeType.OCRG",
+              "NodeType.WEB_AUTOMATION",
+              "NodeType.GDRIVE",
+              "NodeType.ONEDRIVE",
+              "NodeType.SCHEDULER",
+              "NodeType.LOOP",
+              "NodeType.GOOGLE_SHEETS",
+              "NodeType.WEB_FUNCTION",
+              "NodeType.DATA_SOURCE",
+              "NodeType.EMAIL",
+              "NodeType.EMAIL_TRIGGER",
+              "NodeType.TMP",
+              "NodeType.FAXER",
+              "NodeType.PYTHON"
+            ]
+          }
+        }
+      },
+      "WorkflowDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "draftVersion": {
+            "$ref": "#/components/schemas/DraftInstance"
+          },
+          "deployedVersion": {
+            "$ref": "#/components/schemas/DeployedInstance"
+          },
+          "nodesTypeOverview": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "NodeType.MANUAL_TRIGGER",
+                "NodeType.WEBHOOK_TRIGGER",
+                "NodeType.SIDES_PULL_TRIGGER",
+                "NodeType.SIDES_POST",
+                "NodeType.WEBHOOK",
+                "NodeType.OCRG",
+                "NodeType.WEB_AUTOMATION",
+                "NodeType.GDRIVE",
+                "NodeType.ONEDRIVE",
+                "NodeType.SCHEDULER",
+                "NodeType.LOOP",
+                "NodeType.GOOGLE_SHEETS",
+                "NodeType.WEB_FUNCTION",
+                "NodeType.DATA_SOURCE",
+                "NodeType.EMAIL",
+                "NodeType.EMAIL_TRIGGER",
+                "NodeType.TMP",
+                "NodeType.FAXER",
+                "NodeType.PYTHON"
+              ]
+            }
+          },
+          "disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WorkflowPageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "nodesTypeOverview": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "NodeType.MANUAL_TRIGGER",
+                "NodeType.WEBHOOK_TRIGGER",
+                "NodeType.SIDES_PULL_TRIGGER",
+                "NodeType.SIDES_POST",
+                "NodeType.WEBHOOK",
+                "NodeType.OCRG",
+                "NodeType.WEB_AUTOMATION",
+                "NodeType.GDRIVE",
+                "NodeType.ONEDRIVE",
+                "NodeType.SCHEDULER",
+                "NodeType.LOOP",
+                "NodeType.GOOGLE_SHEETS",
+                "NodeType.WEB_FUNCTION",
+                "NodeType.DATA_SOURCE",
+                "NodeType.EMAIL",
+                "NodeType.EMAIL_TRIGGER",
+                "NodeType.TMP",
+                "NodeType.FAXER",
+                "NodeType.PYTHON"
+              ]
+            }
+          },
+          "deployedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hasDraftVersion": {
+            "type": "boolean"
+          },
+          "disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageImpl": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "sorted": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RunStepExecutionInfoDto": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "computedStartTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "computedEndTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "computedDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "IN_PROGRESS",
+              "FAILED",
+              "SKIPPED",
+              "ATTENTION",
+              "DONE"
+            ]
+          },
+          "infoMessage": {
+            "type": "string"
+          },
+          "errorInfo": {
+            "$ref": "#/components/schemas/NodeExecutionErrorInfo"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "input": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "output": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "RunDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/WorkflowShortDto"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "computedDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_PROGRESS",
+              "FAILED",
+              "DONE"
+            ]
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/RunTriggerDto"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RunStepDto"
+            }
+          }
+        }
+      },
+      "RunStepDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "IN_PROGRESS",
+              "FAILED",
+              "SKIPPED",
+              "ATTENTION",
+              "DONE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NodeType.MANUAL_TRIGGER",
+              "NodeType.WEBHOOK_TRIGGER",
+              "NodeType.SIDES_PULL_TRIGGER",
+              "NodeType.SIDES_POST",
+              "NodeType.WEBHOOK",
+              "NodeType.OCRG",
+              "NodeType.WEB_AUTOMATION",
+              "NodeType.GDRIVE",
+              "NodeType.ONEDRIVE",
+              "NodeType.SCHEDULER",
+              "NodeType.LOOP",
+              "NodeType.GOOGLE_SHEETS",
+              "NodeType.WEB_FUNCTION",
+              "NodeType.DATA_SOURCE",
+              "NodeType.EMAIL",
+              "NodeType.EMAIL_TRIGGER",
+              "NodeType.TMP",
+              "NodeType.FAXER",
+              "NodeType.PYTHON"
+            ]
+          },
+          "nestedRuns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RunDto"
+            }
+          }
+        }
+      },
+      "RunTriggerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "started": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "computedStartTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "computedEndTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "computedDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "IN_PROGRESS",
+              "FAILED",
+              "SKIPPED",
+              "ATTENTION",
+              "DONE"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NodeType.MANUAL_TRIGGER",
+              "NodeType.WEBHOOK_TRIGGER",
+              "NodeType.SIDES_PULL_TRIGGER",
+              "NodeType.SIDES_POST",
+              "NodeType.WEBHOOK",
+              "NodeType.OCRG",
+              "NodeType.WEB_AUTOMATION",
+              "NodeType.GDRIVE",
+              "NodeType.ONEDRIVE",
+              "NodeType.SCHEDULER",
+              "NodeType.LOOP",
+              "NodeType.GOOGLE_SHEETS",
+              "NodeType.WEB_FUNCTION",
+              "NodeType.DATA_SOURCE",
+              "NodeType.EMAIL",
+              "NodeType.EMAIL_TRIGGER",
+              "NodeType.TMP",
+              "NodeType.FAXER",
+              "NodeType.PYTHON"
+            ]
+          },
+          "input": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "output": {
+            "type": "object",
+            "properties": {
+              "empty": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "WorkflowShortDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RunExecutionInformationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "computedDuration": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_PROGRESS",
+              "FAILED",
+              "DONE"
+            ]
+          },
+          "stepsExecuted": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "stepsSize": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PageImplDecorator": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object"
+              }
+            }
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "object": {
+            "type": "object"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "description": "API key authentication using Authorization header. Format: 'Authorization: api-key {key}'",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
+}
