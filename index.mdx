@@ -1,97 +1,33 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "About Systems"
 ---
 
-## Setting up
+### Systems & Documents
+The API interacts with various backend and external systems to enable seamless document processing and automation. Each system represents a distinct environment, service, or module that the platform integrates with to provide end-to-end functionality.
 
-Get your documentation site up and running in minutes.
+**Document Payload Requirements**
+- **Maximum size:** 10 MiB per document
+- **Supported MIME types:**
+    - `application/pdf`
+    - `image/jpeg`
+    - `image/png`
+    - `image/tiff`
+- Documents must not contain security restrictions (e.g., password protection)
+- Recommended resolution: 640 × 480 pixels for best results
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+**Key Capabilities**
+- **Data Sources** – Connect and retrieve information from multiple storage and document systems
+- **Processing Engines** – AI-powered extraction, verification, and transformation of document data
+- **Workflow Integrations** – Interact with internal and external workflow systems for task orchestration
+- **Monitoring & Reporting** – Access system health, activity logs, and operational metrics in real-time
 
-## Make it yours
+**Access and Security**
+- Only authorized clients can interact with systems (**401 Unauthorized** if missing)
+- Role-based access ensures actions are permitted according to user privileges (**403 Forbidden** if restricted)
+- Requests must comply with payload specifications (**400 Bad Request** for invalid inputs)
 
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+**Best Practices**
+- Use standard endpoints for all system interactions
+- Handle system errors and connectivity issues gracefully
+- Limit request frequency to prevent overloading integrated systems

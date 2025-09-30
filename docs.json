@@ -74,8 +74,8 @@
     }
   },
   "logo": {
-    "light": "https://storage.googleapis.com/ocrgateway-public-df8d3199c5e23279/logo.svg",
-    "dark": "https://storage.googleapis.com/ocrgateway-public-df8d3199c5e23279/logo.svg"
+    "light": "https://plextera.com/images/plextera-logo-black.svg",
+    "dark": "https://plextera.com/images/plextera-logo-black.svg"
   },
   "navbar": {
   },

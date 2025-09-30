@@ -2,28 +2,23 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Public API",
-    "description": "OCR Gateway exposes a set of document analysis operations through the HTTP interface. Below are presented operations that can be used to interact with the OCR Gateway platform.\n# Authentication\n<SecurityDefinitions />"
-  },
-  "x-mint": {
-    "mcp": {
-      "enabled": true
+    "description": "OCR Gateway exposes a set of document analysis operations through the HTTP interface.\nBelow are presented operations that can be used to interact with the OCR Gateway platform.\n\n# Authentication\n\n\u003CSecurityDefinitions /\u003E\n\nOur API puts some restrictions on the data submitted to the endpoints.\nPassing data that doesn't match these requirements will lead to undefined\nbehaviour or sometimes to the HTTP \u003Ci\u003EBad Request\u003C/i\u003E responses.\u003Cbr\u003E\n\u003Cbr\u003E\u003Cb\u003EGeneral payload limitations\u003C/b\u003E\u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp; The maximum allowed document size is \u003Cb\u003E10 MiB.\u003C/b\u003E\u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp; Documents must not have any security restrictions such as password protection\u003Cbr\u003E\n\u003Cbr\u003E\u003Cb\u003EDocument limitations\u003C/b\u003E\u003Cbr\u003E\nSupported MIME types: \u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp;`application/pdf`\u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp;`image/jpeg`\u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp;`image/png`\u003Cbr\u003E\n&nbsp;&nbsp;&nbsp;&nbsp;`image/tiff`\u003Cbr\u003E\u003Cbr\u003E\n\u003Cbr\u003EWe recommend the \u003Cb\u003E640 x 480 pixels\u003C/b\u003E resolution for documents and images to achieve the most accurate results.\u003Cbr\u003E\n",
+    "version": "v1",
+    "x-logo": {
+      "url": "https://storage.googleapis.com/ocrgateway-public-df8d3199c5e23279/logo.svg",
+      "backgroundColor": "#FFFFFFFF",
+      "href": "https://ocrf.ocrgateway.com"
     }
   },
   "servers": [
     {
-      "url": "https://ocrf.ocrgateway.com/api",
-      "description": "Generated server url"
+      "url": "https://dffa7f187ecc.ngrok-free.app/api",
+      "description": "OCR Gateway API Server"
     }
   ],
   "security": [
     {
-      "Authentication": []
-    }
-  ],
-  "tags": [
-    {
-      "name": "Limitations and assumptions",
-      "description": "Our API puts some restrictions on the data submitted to the endpoints. Passing data that doesn't match these requirements will lead to undefined behaviour or sometimes to the HTTP <i>Bad Request</i> responses.<br><br><b>General payload limitations</b><br>&nbsp;&nbsp;&nbsp;&nbsp; The maximum allowed document size is <b>10 MiB.</b><br>&nbsp;&nbsp;&nbsp;&nbsp; Documents must not have any security restrictions such as password protection<br><br><b>Document limitations</b><br>Supported MIME types: <br>&nbsp;&nbsp;&nbsp;&nbsp;`application/pdf`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/jpeg`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/png`<br>&nbsp;&nbsp;&nbsp;&nbsp;`image/tiff`<br><br><br>We recommend the <b>640 x 480 pixels</b> resolution for documents and images to achieve the most accurate results.<br>"
+      "ApiKeyAuth": []
     }
   ],
   "paths": {
@@ -33,111 +28,78 @@
           "Operations"
         ],
         "summary": "Upload file",
-        "description": "Upload a file for extraction. The file will be enqueued for processing. The processed document will be available after text extraction and completing all workflow steps.\n\nReturns processed document id",
+        "description": "Upload a file for extraction. The file wil be enqueued for processing.\nThe processed document will be available after text extraction and completing all workflow steps.\n\nReturns processed document id\n",
         "operationId": "uploadDocument",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/DocumentExtractionPayloadBase64DataDto"
+                "required": [
+                  "attribute",
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Document file",
+                    "format": "binary"
+                  },
+                  "attribute": {
+                    "$ref": "#/components/schemas/DocumentAttributeDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
               }
             }
           },
-          "required": true
-        },
-        "responses": {
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "200": {
             "description": "File processing started",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/DocumentId"
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/v1/notification/document/{id}": {
-      "post": {
-        "tags": [
-          "Operations"
-        ],
-        "summary": "Create notification",
-        "description": "This endpoint facilitates feedback submission on extracted document data, allowing for the identification of potential inaccuracies or the addition of relevant context.\n\nThe notification type determines how the system processes the feedback:\n\n- `ERROR`: Indicates that the extracted data might be inaccurate and requires verification.\n- `INFO`: Provides supplementary details to enhance document context.",
-        "operationId": "createNotification",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Document id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IncorrectDataRequest"
-              }
-            }
           },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful"
-          },
-          "404": {
-            "description": "document with provided id not found"
-          }
-        }
-      }
-    },
-    "/v1/extract-all-words": {
-      "post": {
-        "tags": [
-          "Operations"
-        ],
-        "summary": "Extract all words",
-        "description": "This endpoint extracts every recognizable word and provides it as an array of objects including additional metadata information. The response schema can be inspected below.",
-        "operationId": "extractAllWords",
-        "parameters": [
-          {
-            "name": "preProcess",
-            "in": "query",
-            "description": "If true the following pre-processing steps could be applied depending on document quality. <br><ul><li>`Deskew document:` Correct small image/page skewness (up to 10 degrees)</li><li>`Dewarp document:` Transform the image or page into a different perspective. e.g. scanned documents, photographed documents, etc.</li><li>`Fix layout:` Automatically correct the rotation of image/page layout if the rotation is wider than 10 degrees</li><li>`DPI optimization:` Reduce the size of big image documents by reducing their DPI</li></ul>",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Document to be uploaded. Supported document types: <br><ul><li>`pdf`</li><li>`jpeg`</li><li>`png`</li><li>`tiff`</li></ul>",
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/MultiRequest"
-              },
-              "encoding": {
-                "document": {}
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "successful",
+          "401": {
+            "description": "Unauthorized",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/GAWDocumentDto"
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -151,7 +113,7 @@
           "Operations"
         ],
         "summary": "Get documents",
-        "description": "Get page of documents (only full processed and rejected will be included).\n\n This method accepts the `q` parameter, which is a search query combining NAME or DATA search terms.",
+        "description": "Get page of documents (only full processed and rejected will be included).\n\nThis method accepts the `q` parameter, which is a search query combining NAME or DATA search terms.\n",
         "operationId": "getDocuments",
         "parameters": [
           {
@@ -284,12 +246,52 @@
           }
         ],
         "responses": {
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "200": {
-            "description": "successful",
+            "description": "Found documents",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TextExtractionRecordPage"
+                  "$ref": "#/components/schemas/PageImpl"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -303,7 +305,7 @@
           "Operations"
         ],
         "summary": "Get document data by ID",
-        "description": "Gets a document's data by ID.\n\n Returns a list of field objects and Information about document.",
+        "description": "Gets a document's data by ID.\nReturns a list of field objects and Information about document.",
         "operationId": "getProcessedDocumentDataById",
         "parameters": [
           {
@@ -318,7 +320,7 @@
         ],
         "responses": {
           "200": {
-            "description": "successful",
+            "description": "Found document",
             "content": {
               "application/json": {
                 "schema": {
@@ -327,57 +329,65 @@
               }
             }
           },
-          "404": {
-            "description": "document with provided id not found"
-          },
-          "425": {
-            "description": "document is not ready"
-          }
-        }
-      }
-    },
-    "/v1/export": {
-      "get": {
-        "tags": [
-          "Operations"
-        ],
-        "summary": "Get text data as csv",
-        "description": "Gets a csv file with the text data by processed documents IDs.\n\n Returns a byte array of the csv document",
-        "operationId": "getExtractedTextAsCsv",
-        "parameters": [
-          {
-            "name": "ids",
-            "in": "query",
-            "description": "Array of processed document ids",
-            "required": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
               }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful",
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
-              "application/octet-stream": {
+              "*/*": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "byte"
-                  }
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
           },
           "404": {
-            "description": "documents with provided ids not found"
+            "description": "Document with provided id not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           },
           "425": {
-            "description": "document is not ready"
+            "description": "Document is not ready",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           }
         }
       }
@@ -388,7 +398,7 @@
           "Operations"
         ],
         "summary": "Download document file",
-        "description": "Download the document file in different qualities:\n\n- `ORIGINAL`: The original file\n- `LOW_QUALITY`: The compressed file. Used to reduce the file size\n- `PROCESSED`: The processed file. Currently are supported the following pre-processing steps: deskew, dewarp, fixlayout\n\nReturns a byte array of the file",
+        "description": "Download the document in `ORIGINAL`, `LOW_QUALITY`, or `PROCESSED`.\n\nProcessed files support pre-processing steps: deskew, dewarp, fixlayout.\n",
         "operationId": "downloadDocument",
         "parameters": [
           {
@@ -418,22 +428,66 @@
           }
         ],
         "responses": {
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "200": {
-            "description": "successful",
+            "description": "Document downloaded",
             "content": {
               "application/octet-stream": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "byte"
-                  }
+                  "type": "string",
+                  "format": "byte"
                 }
               }
             }
           },
           "404": {
-            "description": "processed document with provided id not found"
+            "description": "Processed document with provided id not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           }
         }
       }
@@ -441,29 +495,9 @@
   },
   "components": {
     "schemas": {
-      "DocumentExtractionPayloadBase64DataDto": {
-        "required": [
-          "data",
-          "filename",
-          "mimeType"
-        ],
+      "DocumentAttributeDto": {
         "type": "object",
         "properties": {
-          "filename": {
-            "type": "string",
-            "description": "File name with extension",
-            "example": "new_file.pdf"
-          },
-          "data": {
-            "type": "string",
-            "description": "Document bytes string encoded in Base64 format",
-            "format": "base64",
-            "example": "U3dhZ2dlciByb2Nrcw=="
-          },
-          "mimeType": {
-            "type": "string",
-            "description": "Document mime-type. Supported types: <br><ul><li>`application/pdf`</li><li>`image/jpeg`</li><li>`image/png`</li><li>`image/tiff`</li></ul>"
-          },
           "metaAttributes": {
             "type": "object",
             "additionalProperties": {
@@ -472,7 +506,121 @@
             },
             "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
           }
+        },
+        "description": "Document attributes (only metaAttributes allowed)"
+      },
+      "ApiError": {
+        "required": [
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "httpStatus": {
+            "type": "string",
+            "enum": [
+              "100 CONTINUE",
+              "101 SWITCHING_PROTOCOLS",
+              "102 PROCESSING",
+              "103 EARLY_HINTS",
+              "103 CHECKPOINT",
+              "200 OK",
+              "201 CREATED",
+              "202 ACCEPTED",
+              "203 NON_AUTHORITATIVE_INFORMATION",
+              "204 NO_CONTENT",
+              "205 RESET_CONTENT",
+              "206 PARTIAL_CONTENT",
+              "207 MULTI_STATUS",
+              "208 ALREADY_REPORTED",
+              "226 IM_USED",
+              "300 MULTIPLE_CHOICES",
+              "301 MOVED_PERMANENTLY",
+              "302 FOUND",
+              "302 MOVED_TEMPORARILY",
+              "303 SEE_OTHER",
+              "304 NOT_MODIFIED",
+              "305 USE_PROXY",
+              "307 TEMPORARY_REDIRECT",
+              "308 PERMANENT_REDIRECT",
+              "400 BAD_REQUEST",
+              "401 UNAUTHORIZED",
+              "402 PAYMENT_REQUIRED",
+              "403 FORBIDDEN",
+              "404 NOT_FOUND",
+              "405 METHOD_NOT_ALLOWED",
+              "406 NOT_ACCEPTABLE",
+              "407 PROXY_AUTHENTICATION_REQUIRED",
+              "408 REQUEST_TIMEOUT",
+              "409 CONFLICT",
+              "410 GONE",
+              "411 LENGTH_REQUIRED",
+              "412 PRECONDITION_FAILED",
+              "413 PAYLOAD_TOO_LARGE",
+              "413 REQUEST_ENTITY_TOO_LARGE",
+              "414 URI_TOO_LONG",
+              "414 REQUEST_URI_TOO_LONG",
+              "415 UNSUPPORTED_MEDIA_TYPE",
+              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
+              "417 EXPECTATION_FAILED",
+              "418 I_AM_A_TEAPOT",
+              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
+              "420 METHOD_FAILURE",
+              "421 DESTINATION_LOCKED",
+              "422 UNPROCESSABLE_ENTITY",
+              "423 LOCKED",
+              "424 FAILED_DEPENDENCY",
+              "425 TOO_EARLY",
+              "426 UPGRADE_REQUIRED",
+              "428 PRECONDITION_REQUIRED",
+              "429 TOO_MANY_REQUESTS",
+              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
+              "500 INTERNAL_SERVER_ERROR",
+              "501 NOT_IMPLEMENTED",
+              "502 BAD_GATEWAY",
+              "503 SERVICE_UNAVAILABLE",
+              "504 GATEWAY_TIMEOUT",
+              "505 HTTP_VERSION_NOT_SUPPORTED",
+              "506 VARIANT_ALSO_NEGOTIATES",
+              "507 INSUFFICIENT_STORAGE",
+              "508 LOOP_DETECTED",
+              "509 BANDWIDTH_LIMIT_EXCEEDED",
+              "510 NOT_EXTENDED",
+              "511 NETWORK_AUTHENTICATION_REQUIRED"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string"
+          },
+          "subErrors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiSubError"
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "discriminator": {
+          "propertyName": "error"
         }
+      },
+      "ApiSubError": {
+        "type": "object"
       },
       "DocumentId": {
         "type": "object",
@@ -482,200 +630,54 @@
           }
         }
       },
-      "IncorrectDataRequest": {
-        "required": [
-          "message",
-          "type"
-        ],
+      "PageImpl": {
         "type": "object",
         "properties": {
-          "message": {
-            "maxLength": 1024,
-            "minLength": 0,
-            "type": "string",
-            "description": "A descriptive message explaining the reason for the notification.",
-            "example": "The extracted total amount is incorrect."
-          },
-          "type": {
-            "type": "string",
-            "description": "The types of notification:<li>`ERROR:` Indicates that the extracted data may be inaccurate and requires verification.<li>`INFO:` Provides supplementary details to enhance document context.",
-            "example": "INFO",
-            "enum": [
-              "ERROR",
-              "INFO"
-            ]
-          }
-        }
-      },
-      "MultiRequest": {
-        "type": "object",
-        "properties": {
-          "document": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "DocumentWordDto": {
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "string"
-          },
-          "confidence": {
-            "type": "number",
-            "format": "float"
-          },
-          "boundingBox": {
-            "$ref": "#/components/schemas/ProxyBoundingBoxDto"
-          },
-          "foundOnPage": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "GAWDocumentDto": {
-        "type": "object",
-        "properties": {
-          "header": {
-            "$ref": "#/components/schemas/GAWDocumentHeaderDto"
-          },
-          "words": {
+          "content": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DocumentWordDto"
+              "type": "object"
             }
-          }
-        }
-      },
-      "GAWDocumentHeaderDto": {
-        "type": "object",
-        "properties": {
-          "wordCount": {
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
             "type": "integer",
             "format": "int32"
           },
-          "preprocess-steps": {
+          "first": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/SortObject"
             }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
           }
         }
-      },
-      "ProxyBoundingBoxDto": {
-        "type": "object",
-        "properties": {
-          "x": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "y": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "width": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "height": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "APISourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "userName": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "EmailSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "email": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "FaxSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "fromNumber": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "GDriveSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "email": {
-                "type": "string"
-              },
-              "folder": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "OneDriveSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "email": {
-                "type": "string"
-              },
-              "folder": {
-                "type": "string"
-              }
-            }
-          }
-        ]
       },
       "PageableObject": {
         "type": "object",
@@ -706,109 +708,6 @@
           }
         }
       },
-      "ProcessedDocument": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "createdOn": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "fileName": {
-            "type": "string"
-          },
-          "fileSize": {
-            "type": "string"
-          },
-          "extractedFieldCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "expectedFieldCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "confidence": {
-            "type": "number",
-            "format": "float"
-          },
-          "accuracyVerified": {
-            "type": "boolean"
-          },
-          "processedOn": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "documentId": {
-            "type": "string"
-          },
-          "hubId": {
-            "type": "string"
-          },
-          "hubName": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "DONE",
-              "REJECTED"
-            ]
-          },
-          "sourceInfo": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/APISourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/EmailSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/FaxSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/GDriveSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/OneDriveSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/SiteReaderSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/StudioSourceInfo"
-              },
-              {
-                "$ref": "#/components/schemas/UploadSourceInfo"
-              }
-            ]
-          },
-          "author": {
-            "type": "string"
-          }
-        }
-      },
-      "SiteReaderSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "jobId": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
       "SortObject": {
         "type": "object",
         "properties": {
@@ -829,102 +728,7 @@
           }
         }
       },
-      "SourceInfo": {
-        "type": "object",
-        "properties": {
-          "sourceType": {
-            "type": "string",
-            "enum": [
-              "API",
-              "EMAIL",
-              "UPLOAD",
-              "GDRIVE",
-              "MICROSOFT_ONEDRIVE",
-              "FAX",
-              "STUDIO_WORKFLOW",
-              "SITE_READER"
-            ]
-          }
-        },
-        "discriminator": {
-          "propertyName": "sourceType"
-        }
-      },
-      "StudioSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "workflowId": {
-                "type": "string"
-              },
-              "workflowName": {
-                "type": "string"
-              },
-              "runId": {
-                "type": "string"
-              },
-              "runStepId": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "TextExtractionRecordPage": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProcessedDocument"
-            }
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SortObject"
-            }
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "UploadSourceInfo": {
+      "APISourceInfo": {
         "type": "object",
         "allOf": [
           {
@@ -959,6 +763,38 @@
           }
         }
       },
+      "EmailSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "FaxSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "fromNumber": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "Field": {
         "type": "object",
         "properties": {
@@ -986,6 +822,25 @@
           }
         }
       },
+      "GDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "MatchedFieldMetadataPlacementDto": {
         "type": "object",
         "properties": {
@@ -1006,6 +861,25 @@
             "format": "int32"
           }
         }
+      },
+      "OneDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "ProcessedDocumentDto": {
         "type": "object",
@@ -1124,20 +998,101 @@
             "$ref": "#/components/schemas/CustomOrderProperty"
           }
         }
+      },
+      "SiteReaderSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jobId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "SourceInfo": {
+        "type": "object",
+        "properties": {
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "API",
+              "EMAIL",
+              "UPLOAD",
+              "GDRIVE",
+              "MICROSOFT_ONEDRIVE",
+              "FAX",
+              "STUDIO_WORKFLOW",
+              "SITE_READER"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "sourceType"
+        }
+      },
+      "StudioSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowId": {
+                "type": "string"
+              },
+              "workflowName": {
+                "type": "string"
+              },
+              "runId": {
+                "type": "string"
+              },
+              "runStepId": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "UploadSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "userName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {
-      "Authentication": {
+      "ApiKeyAuth": {
         "type": "apiKey",
-        "description": "All API requests should contain information about your identity. This information should be provided in the form of an API key.\nThe key can be found in the API section of our application. The API key should be passed inside the Authorization HTTP header and its value should be prepended by the **api-key** prefix.",
+        "description": "API key authentication using Authorization header. Format: 'Authorization: api-key {key}'",
         "name": "Authorization",
         "in": "header"
-      },
-      "bearerAuth": {
-        "type": "http",
-        "description": "JWT auth description",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
       }
     }
   }
