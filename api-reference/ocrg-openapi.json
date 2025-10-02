@@ -12,7 +12,7 @@
   },
   "servers": [
     {
-      "url": "https://dffa7f187ecc.ngrok-free.app/api",
+      "url": "https://ocrf.ocrgateway.com/api",
       "description": "OCR Gateway API Server"
     }
   ],
@@ -22,6 +22,109 @@
     }
   ],
   "paths": {
+    "/v1/document/{id}": {
+      "put": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Update Document status",
+        "description": "Update Document status",
+        "operationId": "getProcessedDocumentDataById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Document id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDocumentDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Found document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessedDocumentDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document with provided id not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "425": {
+            "description": "Document is not ready",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/submitDocument": {
       "post": {
         "tags": [
@@ -43,7 +146,8 @@
                   "file": {
                     "type": "string",
                     "description": "Document file",
-                    "format": "binary"
+                    "format": "binary",
+                    "example": "example.pdf"
                   },
                   "attribute": {
                     "$ref": "#/components/schemas/DocumentAttributeDto"
@@ -54,6 +158,16 @@
           }
         },
         "responses": {
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -86,16 +200,6 @@
           },
           "401": {
             "description": "Unauthorized",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
             "content": {
               "*/*": {
                 "schema": {
@@ -246,8 +350,8 @@
           }
         ],
         "responses": {
-          "500": {
-            "description": "Internal server error",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "*/*": {
                 "schema": {
@@ -256,8 +360,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "*/*": {
                 "schema": {
@@ -276,8 +380,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -286,8 +390,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "*/*": {
                 "schema": {
@@ -306,7 +410,7 @@
         ],
         "summary": "Get document data by ID",
         "description": "Gets a document's data by ID.\nReturns a list of field objects and Information about document.",
-        "operationId": "getProcessedDocumentDataById",
+        "operationId": "getProcessedDocumentDataById_1",
         "parameters": [
           {
             "name": "id",
@@ -315,6 +419,30 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "QUEUED",
+                  "PROCESSED",
+                  "DONE",
+                  "UNASSIGNED",
+                  "REJECTED",
+                  "VERIFICATION",
+                  "WORKFLOW_PENDING",
+                  "FAILED",
+                  "DELETED",
+                  "TRASHED"
+                ]
+              }
             }
           }
         ],
@@ -329,6 +457,16 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -339,8 +477,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden",
+          "404": {
+            "description": "Document with provided id not found",
             "content": {
               "*/*": {
                 "schema": {
@@ -349,8 +487,8 @@
               }
             }
           },
-          "404": {
-            "description": "Document with provided id not found",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "*/*": {
                 "schema": {
@@ -371,16 +509,6 @@
           },
           "401": {
             "description": "Unauthorized",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
             "content": {
               "*/*": {
                 "schema": {
@@ -428,6 +556,16 @@
           }
         ],
         "responses": {
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -448,13 +586,12 @@
               }
             }
           },
-          "200": {
-            "description": "Document downloaded",
+          "401": {
+            "description": "Unauthorized",
             "content": {
-              "application/octet-stream": {
+              "*/*": {
                 "schema": {
-                  "type": "string",
-                  "format": "byte"
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -469,22 +606,13 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "200": {
+            "description": "Document downloaded",
             "content": {
-              "*/*": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
+                  "type": "string",
+                  "format": "byte"
                 }
               }
             }
@@ -495,239 +623,6 @@
   },
   "components": {
     "schemas": {
-      "DocumentAttributeDto": {
-        "type": "object",
-        "properties": {
-          "metaAttributes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
-            },
-            "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
-          }
-        },
-        "description": "Document attributes (only metaAttributes allowed)"
-      },
-      "ApiError": {
-        "required": [
-          "error"
-        ],
-        "type": "object",
-        "properties": {
-          "httpStatus": {
-            "type": "string",
-            "enum": [
-              "100 CONTINUE",
-              "101 SWITCHING_PROTOCOLS",
-              "102 PROCESSING",
-              "103 EARLY_HINTS",
-              "103 CHECKPOINT",
-              "200 OK",
-              "201 CREATED",
-              "202 ACCEPTED",
-              "203 NON_AUTHORITATIVE_INFORMATION",
-              "204 NO_CONTENT",
-              "205 RESET_CONTENT",
-              "206 PARTIAL_CONTENT",
-              "207 MULTI_STATUS",
-              "208 ALREADY_REPORTED",
-              "226 IM_USED",
-              "300 MULTIPLE_CHOICES",
-              "301 MOVED_PERMANENTLY",
-              "302 FOUND",
-              "302 MOVED_TEMPORARILY",
-              "303 SEE_OTHER",
-              "304 NOT_MODIFIED",
-              "305 USE_PROXY",
-              "307 TEMPORARY_REDIRECT",
-              "308 PERMANENT_REDIRECT",
-              "400 BAD_REQUEST",
-              "401 UNAUTHORIZED",
-              "402 PAYMENT_REQUIRED",
-              "403 FORBIDDEN",
-              "404 NOT_FOUND",
-              "405 METHOD_NOT_ALLOWED",
-              "406 NOT_ACCEPTABLE",
-              "407 PROXY_AUTHENTICATION_REQUIRED",
-              "408 REQUEST_TIMEOUT",
-              "409 CONFLICT",
-              "410 GONE",
-              "411 LENGTH_REQUIRED",
-              "412 PRECONDITION_FAILED",
-              "413 PAYLOAD_TOO_LARGE",
-              "413 REQUEST_ENTITY_TOO_LARGE",
-              "414 URI_TOO_LONG",
-              "414 REQUEST_URI_TOO_LONG",
-              "415 UNSUPPORTED_MEDIA_TYPE",
-              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
-              "417 EXPECTATION_FAILED",
-              "418 I_AM_A_TEAPOT",
-              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
-              "420 METHOD_FAILURE",
-              "421 DESTINATION_LOCKED",
-              "422 UNPROCESSABLE_ENTITY",
-              "423 LOCKED",
-              "424 FAILED_DEPENDENCY",
-              "425 TOO_EARLY",
-              "426 UPGRADE_REQUIRED",
-              "428 PRECONDITION_REQUIRED",
-              "429 TOO_MANY_REQUESTS",
-              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
-              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
-              "500 INTERNAL_SERVER_ERROR",
-              "501 NOT_IMPLEMENTED",
-              "502 BAD_GATEWAY",
-              "503 SERVICE_UNAVAILABLE",
-              "504 GATEWAY_TIMEOUT",
-              "505 HTTP_VERSION_NOT_SUPPORTED",
-              "506 VARIANT_ALSO_NEGOTIATES",
-              "507 INSUFFICIENT_STORAGE",
-              "508 LOOP_DETECTED",
-              "509 BANDWIDTH_LIMIT_EXCEEDED",
-              "510 NOT_EXTENDED",
-              "511 NETWORK_AUTHENTICATION_REQUIRED"
-            ]
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "message": {
-            "type": "string"
-          },
-          "subErrors": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ApiSubError"
-            }
-          },
-          "type": {
-            "type": "string"
-          },
-          "attributes": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object"
-            }
-          },
-          "error": {
-            "type": "string"
-          }
-        },
-        "discriminator": {
-          "propertyName": "error"
-        }
-      },
-      "ApiSubError": {
-        "type": "object"
-      },
-      "DocumentId": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "PageImpl": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "last": {
-            "type": "boolean"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "size": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "sort": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SortObject"
-            }
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PageableObject": {
-        "type": "object",
-        "properties": {
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "sort": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SortObject"
-            }
-          },
-          "paged": {
-            "type": "boolean"
-          },
-          "unpaged": {
-            "type": "boolean"
-          }
-        }
-      },
-      "SortObject": {
-        "type": "object",
-        "properties": {
-          "direction": {
-            "type": "string"
-          },
-          "nullHandling": {
-            "type": "string"
-          },
-          "ascending": {
-            "type": "boolean"
-          },
-          "property": {
-            "type": "string"
-          },
-          "ignoreCase": {
-            "type": "boolean"
-          }
-        }
-      },
       "APISourceInfo": {
         "type": "object",
         "allOf": [
@@ -750,6 +645,192 @@
           }
         ]
       },
+      "ArtifactData": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "COMPOSER",
+              "E_SIGNATURE",
+              "FAXER"
+            ]
+          },
+          "botId": {
+            "type": "string"
+          }
+        }
+      },
+      "Augmentation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "augmentedFields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AugmentedField"
+            }
+          }
+        }
+      },
+      "AugmentationMetadata": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fromAssistedResult": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AugmentationPath": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string"
+          }
+        }
+      },
+      "AugmentedField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ADD",
+              "DELETE",
+              "UPDATE",
+              "REVIEW"
+            ]
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "previousValue": {
+            "type": "string"
+          },
+          "previousMetadata": {
+            "$ref": "#/components/schemas/AugmentationMetadata"
+          },
+          "newMetadata": {
+            "$ref": "#/components/schemas/AugmentationMetadata"
+          },
+          "newValue": {
+            "type": "string"
+          },
+          "overrideReason": {
+            "type": "string"
+          },
+          "path": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AugmentationPath"
+            }
+          }
+        }
+      },
+      "BoundingBox": {
+        "type": "object",
+        "properties": {
+          "topLeftX": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "topLeftY": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "negative": {
+            "type": "boolean"
+          },
+          "positive": {
+            "type": "boolean"
+          },
+          "bottomRightX": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bottomRightY": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "middleX": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "middleY": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "area": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CellAddress": {
+        "type": "object",
+        "properties": {
+          "row": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "col": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "Classification": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "AUTO",
+              "DIRECT",
+              "INPUT_CONNECTOR_DIRECTLY",
+              "MANUAL",
+              "GDRIVE_DIRECTLY"
+            ]
+          },
+          "username": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "CustomOrderProperty": {
         "type": "object",
         "properties": {
@@ -760,6 +841,513 @@
           "fieldIndex": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CustomVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "DateVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "formats": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "DocumentLanguage": {
+        "type": "object",
+        "properties": {
+          "languages": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          "iso639": {
+            "type": "string",
+            "deprecated": true
+          },
+          "name": {
+            "type": "string",
+            "deprecated": true
+          },
+          "mainLanguageConsideringExceptions": {
+            "type": "string",
+            "enum": [
+              "aa",
+              "ab",
+              "ae",
+              "af",
+              "ak",
+              "am",
+              "an",
+              "ar",
+              "as",
+              "av",
+              "ay",
+              "az",
+              "ba",
+              "be",
+              "bg",
+              "bh",
+              "bi",
+              "bm",
+              "bn",
+              "bo",
+              "br",
+              "bs",
+              "ca",
+              "ce",
+              "ch",
+              "co",
+              "cr",
+              "cs",
+              "cu",
+              "cv",
+              "cy",
+              "da",
+              "de",
+              "dv",
+              "dz",
+              "ee",
+              "el",
+              "en",
+              "eo",
+              "es",
+              "et",
+              "eu",
+              "fa",
+              "ff",
+              "fi",
+              "fj",
+              "fo",
+              "fr",
+              "fy",
+              "ga",
+              "gd",
+              "gl",
+              "gn",
+              "gu",
+              "gv",
+              "ha",
+              "he",
+              "hi",
+              "ho",
+              "hr",
+              "ht",
+              "hu",
+              "hy",
+              "hz",
+              "ia",
+              "id",
+              "ie",
+              "ig",
+              "ii",
+              "ik",
+              "io",
+              "is",
+              "it",
+              "iu",
+              "ja",
+              "jv",
+              "ka",
+              "kg",
+              "ki",
+              "kj",
+              "kk",
+              "kl",
+              "km",
+              "kn",
+              "ko",
+              "kr",
+              "ks",
+              "ku",
+              "kv",
+              "kw",
+              "ky",
+              "la",
+              "lb",
+              "lg",
+              "li",
+              "ln",
+              "lo",
+              "lt",
+              "lu",
+              "lv",
+              "mg",
+              "mh",
+              "mi",
+              "mk",
+              "ml",
+              "mn",
+              "mr",
+              "ms",
+              "mt",
+              "my",
+              "na",
+              "nb",
+              "nd",
+              "ne",
+              "ng",
+              "nl",
+              "nn",
+              "no",
+              "nr",
+              "nv",
+              "ny",
+              "oc",
+              "oj",
+              "om",
+              "or",
+              "os",
+              "pa",
+              "pi",
+              "pl",
+              "ps",
+              "pt",
+              "qu",
+              "rm",
+              "rn",
+              "ro",
+              "ru",
+              "rw",
+              "sa",
+              "sc",
+              "sd",
+              "se",
+              "sg",
+              "si",
+              "sk",
+              "sl",
+              "sm",
+              "sn",
+              "so",
+              "sq",
+              "sr",
+              "ss",
+              "st",
+              "su",
+              "sv",
+              "sw",
+              "ta",
+              "te",
+              "tg",
+              "th",
+              "ti",
+              "tk",
+              "tl",
+              "tn",
+              "to",
+              "tr",
+              "ts",
+              "tt",
+              "tw",
+              "ty",
+              "ug",
+              "uk",
+              "ur",
+              "uz",
+              "ve",
+              "vi",
+              "vo",
+              "wa",
+              "wo",
+              "xh",
+              "yi",
+              "yo",
+              "za",
+              "zh",
+              "zu",
+              "unknown"
+            ]
+          },
+          "mainLanguage": {
+            "type": "string",
+            "enum": [
+              "aa",
+              "ab",
+              "ae",
+              "af",
+              "ak",
+              "am",
+              "an",
+              "ar",
+              "as",
+              "av",
+              "ay",
+              "az",
+              "ba",
+              "be",
+              "bg",
+              "bh",
+              "bi",
+              "bm",
+              "bn",
+              "bo",
+              "br",
+              "bs",
+              "ca",
+              "ce",
+              "ch",
+              "co",
+              "cr",
+              "cs",
+              "cu",
+              "cv",
+              "cy",
+              "da",
+              "de",
+              "dv",
+              "dz",
+              "ee",
+              "el",
+              "en",
+              "eo",
+              "es",
+              "et",
+              "eu",
+              "fa",
+              "ff",
+              "fi",
+              "fj",
+              "fo",
+              "fr",
+              "fy",
+              "ga",
+              "gd",
+              "gl",
+              "gn",
+              "gu",
+              "gv",
+              "ha",
+              "he",
+              "hi",
+              "ho",
+              "hr",
+              "ht",
+              "hu",
+              "hy",
+              "hz",
+              "ia",
+              "id",
+              "ie",
+              "ig",
+              "ii",
+              "ik",
+              "io",
+              "is",
+              "it",
+              "iu",
+              "ja",
+              "jv",
+              "ka",
+              "kg",
+              "ki",
+              "kj",
+              "kk",
+              "kl",
+              "km",
+              "kn",
+              "ko",
+              "kr",
+              "ks",
+              "ku",
+              "kv",
+              "kw",
+              "ky",
+              "la",
+              "lb",
+              "lg",
+              "li",
+              "ln",
+              "lo",
+              "lt",
+              "lu",
+              "lv",
+              "mg",
+              "mh",
+              "mi",
+              "mk",
+              "ml",
+              "mn",
+              "mr",
+              "ms",
+              "mt",
+              "my",
+              "na",
+              "nb",
+              "nd",
+              "ne",
+              "ng",
+              "nl",
+              "nn",
+              "no",
+              "nr",
+              "nv",
+              "ny",
+              "oc",
+              "oj",
+              "om",
+              "or",
+              "os",
+              "pa",
+              "pi",
+              "pl",
+              "ps",
+              "pt",
+              "qu",
+              "rm",
+              "rn",
+              "ro",
+              "ru",
+              "rw",
+              "sa",
+              "sc",
+              "sd",
+              "se",
+              "sg",
+              "si",
+              "sk",
+              "sl",
+              "sm",
+              "sn",
+              "so",
+              "sq",
+              "sr",
+              "ss",
+              "st",
+              "su",
+              "sv",
+              "sw",
+              "ta",
+              "te",
+              "tg",
+              "th",
+              "ti",
+              "tk",
+              "tl",
+              "tn",
+              "to",
+              "tr",
+              "ts",
+              "tt",
+              "tw",
+              "ty",
+              "ug",
+              "uk",
+              "ur",
+              "uz",
+              "ve",
+              "vi",
+              "vo",
+              "wa",
+              "wo",
+              "xh",
+              "yi",
+              "yo",
+              "za",
+              "zh",
+              "zu",
+              "unknown"
+            ]
+          }
+        }
+      },
+      "DocumentMetadata": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "pages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "rawResolution": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "isDigital": {
+            "type": "boolean"
+          },
+          "preprocessingSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "documentLanguage": {
+            "$ref": "#/components/schemas/DocumentLanguage"
+          },
+          "textEngine": {
+            "type": "string",
+            "enum": [
+              "PDF",
+              "GCV",
+              "TESSERACT"
+            ]
+          }
+        }
+      },
+      "DocumentPooledHistory": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string"
           }
         }
       },
@@ -774,6 +1362,39 @@
             "properties": {
               "email": {
                 "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "EnumValueVerification": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "EnumValueVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "enumValues": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EnumValueVerification"
+                }
+              },
+              "caseSensitive": {
+                "type": "boolean"
               }
             }
           }
@@ -794,6 +1415,959 @@
             }
           }
         ]
+      },
+      "FieldValue": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "merged",
+              "semantic",
+              "area",
+              "kve",
+              "table",
+              "group"
+            ]
+          },
+          "extractedWords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extracted": {
+            "type": "boolean"
+          },
+          "textByteSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "emptyCopy": {
+            "$ref": "#/components/schemas/FieldValue"
+          }
+        }
+      },
+      "GDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "HistoryRecord": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "augmentationId": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "MatchedField": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/FieldValue"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/MatchedFieldProperties"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/MatchedFieldMetadata"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "fieldType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "merged",
+              "semantic",
+              "area",
+              "kve",
+              "table",
+              "group"
+            ]
+          },
+          "extracted": {
+            "type": "boolean"
+          },
+          "selector": {
+            "type": "string",
+            "writeOnly": true,
+            "enum": [
+              "KVE",
+              "LABEL_AWARE",
+              "SEMANTIC",
+              "SCRIPT_ITEM",
+              "ADAPTIVE",
+              "AREA",
+              "FORM",
+              "MERGED_FIELD",
+              "UNSTRUCTURED_TABLE",
+              "TEXT",
+              "PATTERN_SCRIPT"
+            ]
+          },
+          "textByteSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "MatchedFieldMetadata": {
+        "type": "object",
+        "properties": {
+          "extracted": {
+            "type": "boolean"
+          },
+          "defaultValue": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "location": {
+            "$ref": "#/components/schemas/BoundingBox"
+          },
+          "cellAddress": {
+            "$ref": "#/components/schemas/CellAddress"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/Verification"
+          },
+          "customOrderProperty": {
+            "$ref": "#/components/schemas/CustomOrderProperty"
+          },
+          "fromDefaultValue": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MatchedFieldProperties": {
+        "type": "object",
+        "properties": {
+          "selectorType": {
+            "type": "string",
+            "enum": [
+              "KVE",
+              "LABEL_AWARE",
+              "SEMANTIC",
+              "SCRIPT_ITEM",
+              "ADAPTIVE",
+              "AREA",
+              "FORM",
+              "MERGED_FIELD",
+              "UNSTRUCTURED_TABLE",
+              "TEXT",
+              "PATTERN_SCRIPT"
+            ]
+          }
+        }
+      },
+      "NERVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "entities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "NumberVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "thousandSeparator": {
+                "type": "boolean"
+              },
+              "decimalPlaces": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "OneDriveSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string"
+              },
+              "folder": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "OutlineMatchingResult": {
+        "type": "object",
+        "properties": {
+          "fields": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedField"
+            }
+          },
+          "aggregatedConfidenceIncludeSubFields": {
+            "type": "number",
+            "format": "double"
+          },
+          "textByteSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "aggregatedConfidence": {
+            "type": "number",
+            "format": "double"
+          },
+          "matchedFieldsDistinctByName": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchedField"
+            }
+          }
+        }
+      },
+      "RecordArtifact": {
+        "required": [
+          "organizationId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "updatedBy": {
+            "type": "string"
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ArtifactData"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "COMPOSER",
+              "E_SIGNATURE",
+              "FAXER"
+            ]
+          },
+          "new": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RegexPredefinedVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "predefineRegex": {
+                "type": "string",
+                "enum": [
+                  "EMAIL",
+                  "URL",
+                  "SSN"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RegexVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "regex": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ReviewRequiredVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "viewed": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "ScriptVerificationCondition": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VerificationCondition"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "scriptItemId": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "SiteReaderSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "jobId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "SourceInfo": {
+        "type": "object",
+        "properties": {
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "API",
+              "EMAIL",
+              "UPLOAD",
+              "GDRIVE",
+              "MICROSOFT_ONEDRIVE",
+              "FAX",
+              "STUDIO_WORKFLOW",
+              "SITE_READER"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "sourceType"
+        }
+      },
+      "StatusHistory": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSED",
+              "DONE",
+              "UNASSIGNED",
+              "REJECTED",
+              "VERIFICATION",
+              "WORKFLOW_PENDING",
+              "FAILED",
+              "DELETED",
+              "TRASHED"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string"
+          }
+        }
+      },
+      "StudioSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workflowId": {
+                "type": "string"
+              },
+              "workflowName": {
+                "type": "string"
+              },
+              "runId": {
+                "type": "string"
+              },
+              "runStepId": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "TextExtractionRecord": {
+        "required": [
+          "documentMetadata",
+          "organizationId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "updatedBy": {
+            "type": "string"
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "float"
+          },
+          "processedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "documentMetadata": {
+            "$ref": "#/components/schemas/DocumentMetadata"
+          },
+          "hubId": {
+            "type": "string"
+          },
+          "outlineId": {
+            "type": "string"
+          },
+          "hubName": {
+            "type": "string"
+          },
+          "outlineName": {
+            "type": "string"
+          },
+          "cause": {
+            "type": "string",
+            "enum": [
+              "HUBS_NOT_FOUND",
+              "DOCUMENT_REJECTED",
+              "MATCHING_HUB_NOT_FOUND",
+              "MATCHING_OUTLINE_NOT_FOUND",
+              "MATCHING_ENABLED_HUB_NOT_FOUND",
+              "HUB_NOT_SUITABLE",
+              "DOCUMENT_HAS_LOW_AGGREGATED_CONFIDENCE",
+              "MISSING_FIELDS",
+              "VERIFICATION_FAILED",
+              "REVIEW_REQUIRED",
+              "WEBHOOK_FAILURE",
+              "DOCUMENT_MOVED",
+              "DOCUMENT_UNDO"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSED",
+              "DONE",
+              "UNASSIGNED",
+              "REJECTED",
+              "VERIFICATION",
+              "WORKFLOW_PENDING",
+              "FAILED",
+              "DELETED",
+              "TRASHED"
+            ]
+          },
+          "sourceInfo": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/APISourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/EmailSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/FaxSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/GDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/OneDriveSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/SiteReaderSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/StudioSourceInfo"
+              },
+              {
+                "$ref": "#/components/schemas/UploadSourceInfo"
+              }
+            ]
+          },
+          "author": {
+            "type": "string"
+          },
+          "filteredExtractedText": {
+            "$ref": "#/components/schemas/OutlineMatchingResult"
+          },
+          "workflow": {
+            "$ref": "#/components/schemas/Workflow"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecordArtifact"
+            }
+          },
+          "searchableText": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "classification": {
+            "$ref": "#/components/schemas/Classification"
+          },
+          "augmentations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Augmentation"
+            }
+          },
+          "historyRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecord"
+            }
+          },
+          "metaAttributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "statusHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatusHistory"
+            }
+          },
+          "documentPooledHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentPooledHistory"
+            }
+          },
+          "assistedResult": {
+            "$ref": "#/components/schemas/OutlineMatchingResult"
+          },
+          "dataQuality": {
+            "type": "number",
+            "format": "float"
+          },
+          "qos": {
+            "type": "boolean"
+          },
+          "fromSmartHub": {
+            "type": "boolean"
+          },
+          "extractedFieldNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extractedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expectedFieldCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "distinctAugmentedFields": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "textByteSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "documentPooledHistoryUsingDescendingTimestamp": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentPooledHistory"
+            }
+          },
+          "failedStatus": {
+            "type": "string",
+            "writeOnly": true,
+            "enum": [
+              "HUBS_NOT_FOUND",
+              "DOCUMENT_REJECTED",
+              "MATCHING_HUB_NOT_FOUND",
+              "MATCHING_OUTLINE_NOT_FOUND",
+              "MATCHING_ENABLED_HUB_NOT_FOUND",
+              "HUB_NOT_SUITABLE",
+              "DOCUMENT_HAS_LOW_AGGREGATED_CONFIDENCE",
+              "MISSING_FIELDS",
+              "VERIFICATION_FAILED",
+              "REVIEW_REQUIRED",
+              "WEBHOOK_FAILURE",
+              "DOCUMENT_MOVED",
+              "DOCUMENT_UNDO"
+            ]
+          },
+          "new": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateDocumentDto": {
+        "type": "object",
+        "properties": {
+          "hubId": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TextExtractionRecord"
+          },
+          "metaAttribute": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UploadSourceInfo": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SourceInfo"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "userName": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "Verification": {
+        "type": "object",
+        "properties": {
+          "verificationCondition": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/VerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/CustomVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/DateVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/EnumValueVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/NERVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/NumberVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/RegexPredefinedVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/RegexVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/ReviewRequiredVerificationCondition"
+              },
+              {
+                "$ref": "#/components/schemas/ScriptVerificationCondition"
+              }
+            ]
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "overrideReason": {
+            "type": "string"
+          },
+          "overridden": {
+            "type": "boolean"
+          }
+        }
+      },
+      "VerificationCondition": {
+        "type": "object",
+        "properties": {
+          "verificationType": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "custom",
+              "date",
+              "number",
+              "regex",
+              "regex_predefined",
+              "enums",
+              "review_required",
+              "ner",
+              "script_item",
+              "script_custom",
+              "script_not_empty",
+              "script_number"
+            ]
+          }
+        },
+        "discriminator": {
+          "propertyName": "verificationType"
+        }
+      },
+      "Workflow": {
+        "required": [
+          "organizationId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedOn": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "updatedBy": {
+            "type": "string"
+          },
+          "organizationId": {
+            "type": "string"
+          },
+          "record": {
+            "$ref": "#/components/schemas/TextExtractionRecord"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowAction"
+            }
+          },
+          "pendingAction": {
+            "$ref": "#/components/schemas/WorkflowAction"
+          },
+          "new": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WorkflowAction": {
+        "required": [
+          "ctx",
+          "id",
+          "priority",
+          "status",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "BOT",
+              "WEBHOOK",
+              "SPREADSHEET",
+              "QB_BILL",
+              "HS_COMPANY",
+              "SF_SALES_ACCOUNT"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PENDING",
+              "FAILED",
+              "SKIPPED",
+              "DONE"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          },
+          "ctx": {
+            "$ref": "#/components/schemas/WorkflowContext"
+          }
+        }
+      },
+      "WorkflowContext": {
+        "type": "object",
+        "properties": {
+          "info": {
+            "type": "object"
+          },
+          "target": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "visualName": {
+            "type": "string"
+          }
+        }
       },
       "Field": {
         "type": "object",
@@ -822,25 +2396,6 @@
           }
         }
       },
-      "GDriveSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "email": {
-                "type": "string"
-              },
-              "folder": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
       "MatchedFieldMetadataPlacementDto": {
         "type": "object",
         "properties": {
@@ -861,25 +2416,6 @@
             "format": "int32"
           }
         }
-      },
-      "OneDriveSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "email": {
-                "type": "string"
-              },
-              "folder": {
-                "type": "string"
-              }
-            }
-          }
-        ]
       },
       "ProcessedDocumentDto": {
         "type": "object",
@@ -999,92 +2535,238 @@
           }
         }
       },
-      "SiteReaderSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "jobId": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "SourceInfo": {
+      "ApiError": {
+        "required": [
+          "error"
+        ],
         "type": "object",
         "properties": {
-          "sourceType": {
+          "httpStatus": {
             "type": "string",
             "enum": [
-              "API",
-              "EMAIL",
-              "UPLOAD",
-              "GDRIVE",
-              "MICROSOFT_ONEDRIVE",
-              "FAX",
-              "STUDIO_WORKFLOW",
-              "SITE_READER"
+              "100 CONTINUE",
+              "101 SWITCHING_PROTOCOLS",
+              "102 PROCESSING",
+              "103 EARLY_HINTS",
+              "103 CHECKPOINT",
+              "200 OK",
+              "201 CREATED",
+              "202 ACCEPTED",
+              "203 NON_AUTHORITATIVE_INFORMATION",
+              "204 NO_CONTENT",
+              "205 RESET_CONTENT",
+              "206 PARTIAL_CONTENT",
+              "207 MULTI_STATUS",
+              "208 ALREADY_REPORTED",
+              "226 IM_USED",
+              "300 MULTIPLE_CHOICES",
+              "301 MOVED_PERMANENTLY",
+              "302 FOUND",
+              "302 MOVED_TEMPORARILY",
+              "303 SEE_OTHER",
+              "304 NOT_MODIFIED",
+              "305 USE_PROXY",
+              "307 TEMPORARY_REDIRECT",
+              "308 PERMANENT_REDIRECT",
+              "400 BAD_REQUEST",
+              "401 UNAUTHORIZED",
+              "402 PAYMENT_REQUIRED",
+              "403 FORBIDDEN",
+              "404 NOT_FOUND",
+              "405 METHOD_NOT_ALLOWED",
+              "406 NOT_ACCEPTABLE",
+              "407 PROXY_AUTHENTICATION_REQUIRED",
+              "408 REQUEST_TIMEOUT",
+              "409 CONFLICT",
+              "410 GONE",
+              "411 LENGTH_REQUIRED",
+              "412 PRECONDITION_FAILED",
+              "413 PAYLOAD_TOO_LARGE",
+              "413 REQUEST_ENTITY_TOO_LARGE",
+              "414 URI_TOO_LONG",
+              "414 REQUEST_URI_TOO_LONG",
+              "415 UNSUPPORTED_MEDIA_TYPE",
+              "416 REQUESTED_RANGE_NOT_SATISFIABLE",
+              "417 EXPECTATION_FAILED",
+              "418 I_AM_A_TEAPOT",
+              "419 INSUFFICIENT_SPACE_ON_RESOURCE",
+              "420 METHOD_FAILURE",
+              "421 DESTINATION_LOCKED",
+              "422 UNPROCESSABLE_ENTITY",
+              "423 LOCKED",
+              "424 FAILED_DEPENDENCY",
+              "425 TOO_EARLY",
+              "426 UPGRADE_REQUIRED",
+              "428 PRECONDITION_REQUIRED",
+              "429 TOO_MANY_REQUESTS",
+              "431 REQUEST_HEADER_FIELDS_TOO_LARGE",
+              "451 UNAVAILABLE_FOR_LEGAL_REASONS",
+              "500 INTERNAL_SERVER_ERROR",
+              "501 NOT_IMPLEMENTED",
+              "502 BAD_GATEWAY",
+              "503 SERVICE_UNAVAILABLE",
+              "504 GATEWAY_TIMEOUT",
+              "505 HTTP_VERSION_NOT_SUPPORTED",
+              "506 VARIANT_ALSO_NEGOTIATES",
+              "507 INSUFFICIENT_STORAGE",
+              "508 LOOP_DETECTED",
+              "509 BANDWIDTH_LIMIT_EXCEEDED",
+              "510 NOT_EXTENDED",
+              "511 NETWORK_AUTHENTICATION_REQUIRED"
             ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string"
+          },
+          "subErrors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApiSubError"
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "error": {
+            "type": "string"
           }
         },
         "discriminator": {
-          "propertyName": "sourceType"
+          "propertyName": "error"
         }
       },
-      "StudioSourceInfo": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "workflowId": {
-                "type": "string"
-              },
-              "workflowName": {
-                "type": "string"
-              },
-              "runId": {
-                "type": "string"
-              },
-              "runStepId": {
-                "type": "string"
-              }
-            }
-          }
-        ]
+      "ApiSubError": {
+        "type": "object"
       },
-      "UploadSourceInfo": {
+      "DocumentAttributeDto": {
         "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SourceInfo"
-          },
-          {
+        "properties": {
+          "metaAttributes": {
             "type": "object",
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "userName": {
-                "type": "string"
-              }
-            }
+            "additionalProperties": {
+              "type": "string",
+              "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
+            },
+            "description": "Meta Attributes. Set of properties to be included in the context of the document payload"
           }
-        ]
+        },
+        "description": "Document attributes (only metaAttributes allowed)"
+      },
+      "DocumentId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "PageImpl": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortObject"
+            }
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string"
+          },
+          "nullHandling": {
+            "type": "string"
+          },
+          "ascending": {
+            "type": "boolean"
+          },
+          "property": {
+            "type": "string"
+          },
+          "ignoreCase": {
+            "type": "boolean"
+          }
+        }
       }
     },
     "securitySchemes": {

@@ -26,6 +26,7 @@
               "api-reference/endpoint/di/submit-document/submit",
               "api-reference/endpoint/di/processed/processed_get",
               "api-reference/endpoint/di/processed/processed_id_data_get",
+              "api-reference/endpoint/di/documents/update_status_id",
               "api-reference/endpoint/di/documents/documents_id_get"
             ]
           },
